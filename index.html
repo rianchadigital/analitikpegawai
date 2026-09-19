@@ -12,23 +12,30 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <!-- Production Stylesheet for Hostinger -->
-    <link rel="stylesheet" crossorigin href="./assets/bundle.css" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <!-- Production Stylesheet for Hostinger / Niagahoster -->
+    <link rel="stylesheet" crossorigin href="./assets/bundle.css?v=20260920-v2" />
   </head>
   <body>
     <div id="root"></div>
-    <!-- Hostinger Git Auto-Loader: Directly loads bundle on Hostinger static hosting -->
+    <!-- Hostinger / Niagahoster Git Auto-Loader: Loads compiled bundle with version cache-buster -->
     <script>
       (function() {
         var isDev = window.location.hostname === 'localhost' || 
                     window.location.port === '3000' || 
                     window.location.hostname.includes('run.app');
         if (!isDev) {
-          var s = document.createElement('script');
-          s.type = 'module';
-          s.crossOrigin = 'anonymous';
-          s.src = './assets/bundle.js';
-          document.body.appendChild(s);
+          // Check if Vite production build already embedded script
+          var existing = document.querySelector('script[src*="bundle.js"]');
+          if (!existing) {
+            var s = document.createElement('script');
+            s.type = 'module';
+            s.crossOrigin = 'anonymous';
+            s.src = './assets/bundle.js?v=20260920-v2';
+            document.body.appendChild(s);
+          }
         }
       })();
     </script>

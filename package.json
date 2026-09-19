@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs && mkdir -p assets && cp dist/assets/bundle.* assets/ && cp dist/.htaccess .htaccess && cp public/api-sync.php dist/ && cp public/api-sync.php ./api-sync.php",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs && mkdir -p assets && cp dist/assets/bundle.* assets/ && python3 scripts/pack_release.py",
     "start": "node dist/server.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
