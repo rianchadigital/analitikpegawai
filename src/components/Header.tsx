@@ -1,0 +1,434 @@
+import React, { useState } from 'react';
+import { 
+  Table2, 
+  BarChart3, 
+  Layers, 
+  Sparkles, 
+  Plus, 
+  Upload, 
+  Download, 
+  RotateCcw, 
+  Undo2, 
+  Redo2, 
+  CheckCircle2, 
+  Trash2,
+  FileSpreadsheet,
+  TrendingUp,
+  PieChart,
+  RefreshCw,
+  ExternalLink,
+  Package,
+  Server,
+  HelpCircle,
+  Check,
+  X
+} from 'lucide-react';
+import { Sheet, ActiveTab } from '../types/sheet';
+
+interface HeaderProps {
+  sheets: Sheet[];
+  activeSheetId: string;
+  onSelectSheet: (id: string) => void;
+  onAddNewSheet: () => void;
+  onDeleteSheet: (id: string) => void;
+  activeTab: ActiveTab;
+  onChangeTab: (tab: ActiveTab) => void;
+  onOpenImportModal: () => void;
+  onExportCsv: () => void;
+  onExportJson: () => void;
+  onResetDefaults: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
+  lastSaved: string;
+  onSyncGoogleSheet?: () => void;
+  isSyncing?: boolean;
+  lastSynced?: string;
+}
+
+export const Header: React.FC<HeaderProps> = ({
+  sheets,
+  activeSheetId,
+  onSelectSheet,
+  onAddNewSheet,
+  onDeleteSheet,
+  activeTab,
+  onChangeTab,
+  onOpenImportModal,
+  onExportCsv,
+  onExportJson,
+  onResetDefaults,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
+  lastSaved,
+  onSyncGoogleSheet,
+  isSyncing = false,
+  lastSynced,
+}) => {
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [showDeployGuide, setShowDeployGuide] = useState(false);
+  const activeSheet = sheets.find(s => s.id === activeSheetId);
+
+  const getSheetIcon = (iconName?: string) => {
+    switch (iconName) {
+      case 'TrendingUp':
+        return <TrendingUp className="w-4 h-4 text-emerald-600" />;
+      case 'PieChart':
+        return <PieChart className="w-4 h-4 text-sky-600" />;
+      default:
+        return <FileSpreadsheet className="w-4 h-4 text-indigo-600" />;
+    }
+  };
+
+  return (
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+      {/* Top Application Bar */}
+      <div className="px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100">
+        {/* Brand & App Identity */}
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-bold shadow-xs">
+            <Table2 className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-bold text-slate-900 tracking-tight">
+                Sheet Analitik
+              </h1>
+              <span className="px-2 py-0.5 text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">
+                Sistem Pengelolaan & BI
+              </span>
+            </div>
+            <p className="text-xs text-slate-700">
+              {activeSheet?.description || 'Pengelolaan data tabular dan analitik terintegrasi'}
+            </p>
+          </div>
+        </div>
+
+        {/* Global Action Tools */}
+        <div className="flex items-center gap-2">
+          {/* Undo / Redo */}
+          <div className="flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200 mr-1">
+            <button
+              id="btn-undo"
+              onClick={onUndo}
+              disabled={!canUndo}
+              title="Urungkan Perubahan (Undo)"
+              className="p-1.5 rounded text-slate-600 hover:text-slate-900 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+            >
+              <Undo2 className="w-4 h-4" />
+            </button>
+            <button
+              id="btn-redo"
+              onClick={onRedo}
+              disabled={!canRedo}
+              title="Ulangi Perubahan (Redo)"
+              className="p-1.5 rounded text-slate-600 hover:text-slate-900 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+            >
+              <Redo2 className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Google Sheets Sync Pill */}
+          {activeSheet?.id === 'sheet-master-puskesmas' && (
+            <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-300 px-2.5 py-1 rounded-lg">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[11px] font-bold text-emerald-800 hidden md:inline">Google Sheets Terkoneksi</span>
+              {onSyncGoogleSheet && (
+                <button
+                  onClick={onSyncGoogleSheet}
+                  disabled={isSyncing}
+                  title="Tarik data terbaru dari Google Sheets"
+                  className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-900 bg-white border border-emerald-200 px-2 py-0.5 rounded shadow-2xs transition-colors disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin' : ''}`} />
+                  <span>{isSyncing ? 'Menyinkronkan...' : 'Sinkron'}</span>
+                </button>
+              )}
+              <a
+                href="https://docs.google.com/spreadsheets/d/1ykpLnIE8305uphJMvXOdPuwb8T_mkQsnw8GOmByLFko/edit?gid=1900197277#gid=1900197277"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Buka Spreadsheet di Google Sheets"
+                className="text-emerald-700 hover:text-emerald-900 p-0.5"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          )}
+
+          {/* Auto-saved indicator */}
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-md">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Tersimpan {lastSaved}</span>
+          </div>
+
+          {/* Import CSV */}
+          <button
+            id="btn-import-csv"
+            onClick={onOpenImportModal}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg shadow-xs transition-colors"
+          >
+            <Upload className="w-3.5 h-3.5 text-slate-500" />
+            <span>Impor CSV</span>
+          </button>
+
+          {/* Export Dropdown */}
+          <div className="relative">
+            <button
+              id="btn-export-dropdown"
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg shadow-xs transition-colors"
+            >
+              <Download className="w-3.5 h-3.5 text-slate-500" />
+              <span>Ekspor Data</span>
+            </button>
+            {showExportMenu && (
+              <div 
+                className="absolute right-0 mt-1 w-56 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 text-xs text-slate-700"
+                onClick={() => setShowExportMenu(false)}
+              >
+                <button
+                  onClick={onExportCsv}
+                  className="w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center justify-between"
+                >
+                  <span>Unduh Format CSV</span>
+                  <span className="text-[10px] text-slate-400 font-mono">.csv</span>
+                </button>
+                <button
+                  onClick={onExportJson}
+                  className="w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center justify-between"
+                >
+                  <span>Unduh Format JSON</span>
+                  <span className="text-[10px] text-slate-400 font-mono">.json</span>
+                </button>
+                <div className="border-t border-slate-100 my-1"></div>
+                <a
+                  href="./hostinger_public_html.zip"
+                  download="hostinger_public_html.zip"
+                  className="w-full text-left px-3 py-2 hover:bg-emerald-50 text-emerald-800 flex items-center justify-between font-semibold"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Package className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Paket Hostinger Siap Pakai</span>
+                  </span>
+                  <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1 rounded font-mono">.zip</span>
+                </a>
+              </div>
+            )}
+          </div>
+
+          {/* Dedicated Hostinger Deploy Button */}
+          <button
+            id="btn-hostinger-deploy"
+            onClick={() => setShowDeployGuide(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg shadow-xs transition-colors"
+          >
+            <Server className="w-3.5 h-3.5" />
+            <span>Deploy Hostinger</span>
+          </button>
+
+          {/* Reset / Pulihkan sample button */}
+          <button
+            id="btn-reset-sample"
+            onClick={onResetDefaults}
+            title="Pulihkan & Selaraskan Data Resmi Master SDMK (Reset Cache)"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+            <span className="hidden sm:inline">Pulihkan Data</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Sheets Navigation & Workspace View Switcher */}
+      <div className="px-4 flex flex-wrap items-center justify-between gap-3 bg-slate-50/70 border-t border-slate-100">
+        {/* Sheet Tabs */}
+        <div className="flex items-center gap-1 overflow-x-auto py-1.5 max-w-full">
+          <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider px-1">
+            Lembar:
+          </span>
+          {sheets.map(sheet => {
+            const isActive = sheet.id === activeSheetId;
+            return (
+              <div
+                key={sheet.id}
+                className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all border ${
+                  isActive
+                    ? 'bg-white text-emerald-800 border-slate-300 shadow-xs font-semibold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border-transparent'
+                }`}
+                onClick={() => onSelectSheet(sheet.id)}
+              >
+                {getSheetIcon(sheet.icon)}
+                <span className="truncate max-w-[160px]">{sheet.name}</span>
+                <span className="text-[10px] px-1.5 py-0.2 bg-slate-100 text-slate-700 rounded-full font-mono">
+                  {sheet.rows.length}
+                </span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteSheet(sheet.id);
+                  }}
+                  title={`Hapus lembar kerja "${sheet.name}"`}
+                  className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-all ml-0.5"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            );
+          })}
+
+          <button
+            id="btn-add-sheet"
+            onClick={onAddNewSheet}
+            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 rounded-lg transition-colors border border-dashed border-slate-300"
+            title="Tambah Lembar Kerja Baru"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Sheet Baru</span>
+          </button>
+        </div>
+
+        {/* Workspace View Mode Selector */}
+        <div className="flex items-center gap-1.5 py-1.5">
+          <button
+            id="tab-sheet-view"
+            onClick={() => onChangeTab('sheet')}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              activeTab === 'sheet'
+                ? 'bg-emerald-700 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+            }`}
+          >
+            <Table2 className="w-3.5 h-3.5" />
+            <span>Data Sheet</span>
+          </button>
+
+          <button
+            id="tab-analytics-view"
+            onClick={() => onChangeTab('analytics')}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              activeTab === 'analytics' || activeTab === 'pivot'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+            }`}
+          >
+            <BarChart3 className="w-3.5 h-3.5" />
+            <span>Lembar Analitik & Grafik</span>
+          </button>
+
+          <button
+            id="tab-ai-view"
+            onClick={() => onChangeTab('ai')}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              activeTab === 'ai'
+                ? 'bg-emerald-700 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Wawasan AI (Gemini)</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Hostinger Deploy Guide Modal */}
+      {showDeployGuide && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-xl w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="px-6 py-4 bg-emerald-700 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                  <Server className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold">Solusi Deploy Hostinger (Bebas Layar Putih)</h3>
+                  <p className="text-[11px] text-emerald-100">Paket file siap saji khusus direktori public_html Hostinger</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowDeployGuide(false)}
+                className="p-1 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-5 text-xs text-slate-700 max-h-[75vh] overflow-y-auto">
+              <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
+                <HelpCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="text-[11px] leading-relaxed text-amber-900">
+                  <strong>Penyebab Layar Putih Sebelumnya:</strong> Hostinger Git secara bawaan menarik source code mentah (<code className="bg-amber-100 px-1 py-0.5 rounded text-amber-800">src/main.tsx</code>) yang tidak bisa dijalankan oleh browser. Web butuh hasil kompilasi produksi (<code className="bg-amber-100 px-1 py-0.5 rounded text-amber-800">index.html</code> + <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-800">assets/</code>).
+                </div>
+              </div>
+
+              {/* Step 1: Download */}
+              <div className="border border-slate-200 rounded-xl p-4 bg-slate-50">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-bold text-slate-900 flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px]">1</span>
+                    Unduh Paket Siap Deploy (.ZIP)
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-mono">~275 KB</span>
+                </div>
+                <p className="text-[11px] text-slate-600 mb-3">
+                  Paket ini sudah berisi <code className="text-slate-800 font-semibold">index.html</code>, folder <code className="text-slate-800 font-semibold">assets/</code>, dan konfigurasi <code className="text-slate-800 font-semibold">.htaccess</code> Hostinger.
+                </p>
+                <a
+                  href="./hostinger_public_html.zip"
+                  download="hostinger_public_html.zip"
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-xs transition-colors"
+                >
+                  <Package className="w-4 h-4" />
+                  <span>Klik Untuk Download: hostinger_public_html.zip</span>
+                </a>
+              </div>
+
+              {/* Step 2: Extract in Hostinger */}
+              <div className="border border-slate-200 rounded-xl p-4 space-y-2">
+                <span className="font-bold text-slate-900 flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px]">2</span>
+                  Upload & Ekstrak di File Manager Hostinger
+                </span>
+                <ol className="list-decimal list-inside space-y-1.5 text-[11px] text-slate-600 pl-1">
+                  <li>Buka <strong>hPanel Hostinger</strong> ➔ <strong>File Manager</strong>.</li>
+                  <li>Buka folder:
+                    <div className="my-1.5 p-2 bg-slate-100 rounded-lg font-mono text-[10px] text-slate-800 select-all border border-slate-200 break-all">
+                      /domains/analitikpegawaipkmkss.puskesmasseribuselatan.com/public_html
+                    </div>
+                  </li>
+                  <li>Hapus file lama yang ada di dalam <code className="font-semibold">public_html</code> (jika ada file mentah dari Git sebelumnya).</li>
+                  <li>Upload file <code className="font-semibold text-emerald-700">hostinger_public_html.zip</code> yang baru Anda download.</li>
+                  <li>Klik kanan file zip tersebut di Hostinger ➔ Pilih <strong>Extract</strong> (ekstrak di folder yang sama / titik <code className="bg-slate-200 px-1 rounded">.</code>).</li>
+                </ol>
+              </div>
+
+              {/* Step 3: Finished */}
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-2.5">
+                <Check className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                <div className="text-[11px] text-emerald-900 leading-relaxed">
+                  <strong>Selesai! Tidak Perlu Node.js Server:</strong> Seluruh 158 data master staf puskesmas sudah tertanam langsung (*pre-embedded*). Fitur sinkronisasi Google Sheets juga sudah dilengkapi modul *client-side*, sehingga web berjalan 100% cepat dan stabil di shared hosting biasa!
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+              <button
+                onClick={() => setShowDeployGuide(false)}
+                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl text-xs transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </header>
+  );
+};

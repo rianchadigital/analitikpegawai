@@ -1,0 +1,6 @@
+{
+  "name": "Data Sheet Analitik",
+  "description": "Aplikasi pengelolaan data lembar kerja interaktif dan dashboard analitik terpadu dengan visualisasi grafik, formula, filter, dan agregasi data.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

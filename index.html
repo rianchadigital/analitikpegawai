@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Sheet Analitik - Pengelolaan & Visualisasi Data</title>
+    <meta name="description" content="Aplikasi pengelolaan data lembar kerja interaktif dan dashboard analitik terpadu dengan visualisasi grafik, formula, filter, dan agregasi data." />
+    <meta property="og:title" content="Data Sheet Analitik - Pengelolaan & Visualisasi Data" />
+    <meta property="og:description" content="Aplikasi pengelolaan data lembar kerja interaktif dan dashboard analitik terpadu dengan visualisasi grafik, formula, filter, dan agregasi data." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Production Stylesheet for Hostinger -->
+    <link rel="stylesheet" crossorigin href="./assets/bundle.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- Hostinger Git Auto-Loader: Directly loads bundle on Hostinger static hosting -->
+    <script>
+      (function() {
+        var isDev = window.location.hostname === 'localhost' || 
+                    window.location.port === '3000' || 
+                    window.location.hostname.includes('run.app');
+        if (!isDev) {
+          var s = document.createElement('script');
+          s.type = 'module';
+          s.crossOrigin = 'anonymous';
+          s.src = './assets/bundle.js';
+          document.body.appendChild(s);
+        }
+      })();
+    </script>
+    <!-- Development Source for AI Studio Dev Preview -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
