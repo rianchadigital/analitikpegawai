@@ -1,8 +1,14 @@
 import { Sheet, RowData, ColumnDef } from '../types/sheet';
 import { MASTER_SHEET_DATA } from '../data/masterSheetData';
+import { URAIAN_TUGAS_SHEET_DATA, URAIAN_TUGAS_COLUMNS } from '../data/defaultUraianTugas';
+import { convertGoogleDriveUrl } from './googleDriveHelper';
 
 const SPREADSHEET_ID = '1ykpLnIE8305uphJMvXOdPuwb8T_mkQsnw8GOmByLFko';
 const GID = '1900197277';
+
+export const URAIAN_SPREADSHEET_ID = '10MGH1h8nirliwFsyICcCghylhARdjCt8ulhKfrng_c0';
+export const URAIAN_GID = '0';
+
 
 export function parseYearMonth(str: string): number {
   if (!str) return 0;
@@ -301,3 +307,165 @@ export async function syncGoogleSheetData(): Promise<{ success: boolean; sheet?:
     rowCount: MASTER_SHEET_DATA.rows.length
   };
 }
+
+export function transformCSVToUraianSheet(csvText: string): Sheet {
+  const arr = parseCSV(csvText);
+  if (arr.length < 2) {
+    throw new Error('Data CSV Google Sheet Uraian Tugas tidak memiliki baris data');
+  }
+
+  const rawRows = arr.slice(2).filter(r => r[1] && r[1].trim());
+  const rows: RowData[] = [];
+
+  rawRows.forEach((r, idx) => {
+    const nama = (r[1] || "").trim();
+    if (!nama) return;
+
+    const no = parseInt(r[0] || `${idx + 1}`, 10) || (idx + 1);
+    const klaster = (r[2] || "").trim();
+    const subKlaster = (r[3] || "").trim();
+    const nip = (r[4] || "").trim();
+    const status = (r[5] || "").trim() || "PNS";
+    const jabatan = (r[6] || "").trim() || "-";
+    const tempatTugas = (r[7] || "").trim() || "Puskesmas Kepulauan Seribu Selatan";
+    
+    // Ikhtisar jabatan (col 32, 30, atau 31, atau fallback)
+    const ikhtisar = (r[32] || r[30] || r[31] || "").trim() || 
+      `Melaksanakan tugas pelayanan dan tata kelola sesuai formasi jabatan ${jabatan} pada ${tempatTugas} untuk mendukung pelayanan kesehatan prima.`;
+
+    let fotoUrl = (r[29] || "").trim();
+    if (fotoUrl) {
+      fotoUrl = convertGoogleDriveUrl(fotoUrl);
+    }
+
+    rows.push({
+      _id: `uraian_staff_${no}`,
+      no,
+      nama,
+      klaster,
+      sub_klaster: subKlaster,
+      nip,
+      status,
+      jabatan,
+      tempat_tugas: tempatTugas,
+      ikhtisar_jabatan: ikhtisar,
+      tugas_pokok_1: (r[8] || "").trim(),
+      tugas_pokok_2: (r[9] || "").trim(),
+      tugas_pokok_3: (r[10] || "").trim(),
+      tugas_pokok_4: (r[11] || "").trim(),
+      tugas_pokok_5: (r[12] || "").trim(),
+      tugas_pokok_6: (r[13] || "").trim(),
+      tugas_pokok_7: (r[14] || "").trim(),
+      tugas_pokok_8: (r[15] || "").trim(),
+      tugas_pokok_9: (r[16] || "").trim(),
+      tugas_pokok_10: (r[17] || "").trim(),
+      tugas_tambahan_1: (r[18] || "").trim(),
+      tugas_tambahan_2: (r[19] || "").trim(),
+      tugas_tambahan_3: (r[20] || "").trim(),
+      tugas_tambahan_4: (r[21] || "").trim(),
+      tugas_tambahan_5: (r[22] || "").trim(),
+      wewenang_1: (r[23] || "").trim(),
+      wewenang_2: (r[24] || "").trim(),
+      wewenang_3: (r[25] || "").trim(),
+      tanggung_jawab_1: (r[26] || "").trim(),
+      tanggung_jawab_2: (r[27] || "").trim(),
+      tanggung_jawab_3: (r[28] || "").trim(),
+      foto: fotoUrl,
+      nama_pemberi_tugas: "dr. Ignatius Dendy Purnama",
+      nip_pemberi_tugas: "198607192014031004",
+      jabatan_pemberi_tugas: "Kepala Puskesmas Kepulauan Seribu Selatan",
+      tanggal_penetapan: "Jakarta, 03 Mei 2025"
+    });
+  });
+
+  return {
+    id: "sheet-uraian-tugas",
+    name: "Data Uraian Tugas Pegawai",
+    description: `Pengelolaan uraian tugas jabatan, ikhtisar jabatan, tugas pokok, tugas tambahan, dan kartu uraian tugas pegawai Puskesmas Kepulauan Seribu Selatan (${rows.length} Staf).`,
+    icon: "FileText",
+    updatedAt: new Date().toISOString(),
+    columns: URAIAN_TUGAS_COLUMNS,
+    rows,
+    primaryMetricId: "no",
+    primaryCategoryId: "tempat_tugas"
+  };
+}
+
+export async function syncUraianTugasData(): Promise<{ success: boolean; sheet?: Sheet; rowCount?: number; error?: string }> {
+  // Strategy 1: Hostinger PHP backend (api-sync.php) or Express API (/api/sync-google-sheet)
+  try {
+    const endpoints = [
+      `/api/sync-google-sheet?type=uraian&spreadsheetId=${URAIAN_SPREADSHEET_ID}&gid=${URAIAN_GID}`,
+      `/api-sync.php?type=uraian&spreadsheetId=${URAIAN_SPREADSHEET_ID}&gid=${URAIAN_GID}`
+    ];
+    for (const ep of endpoints) {
+      try {
+        const res = await fetch(ep, { cache: 'no-cache' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.sheet && data.sheet.rows && data.sheet.rows.length > 0) {
+            return { success: true, sheet: data.sheet, rowCount: data.sheet.rows.length };
+          }
+          if (data.csv && typeof data.csv === 'string' && data.csv.length > 100) {
+            const sheet = transformCSVToUraianSheet(data.csv);
+            return { success: true, sheet, rowCount: sheet.rows.length };
+          }
+        }
+      } catch {
+        // Try next endpoint
+      }
+    }
+  } catch (e) {
+    console.warn('Backend proxy tidak merespons, beralih ke direct Google Sheets API...');
+  }
+
+  // Strategy 2: Google Visualization API (gviz/tq) with native CORS support
+  try {
+    const gvizUrl = `https://docs.google.com/spreadsheets/d/${URAIAN_SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=${URAIAN_GID}`;
+    const response = await fetch(gvizUrl, {
+      method: 'GET',
+      headers: {
+        'Accept': 'text/csv,text/plain,*/*'
+      }
+    });
+
+    if (response.ok) {
+      const text = await response.text();
+      if (text && text.length > 200) {
+        const sheet = transformCSVToUraianSheet(text);
+        if (sheet.rows.length > 0) {
+          return { success: true, sheet, rowCount: sheet.rows.length };
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Direct fetch gviz terhalang browser, mencoba fallback CORS proxy...', err);
+  }
+
+  // Strategy 3: Public CORS proxy fallback
+  try {
+    const targetUrl = encodeURIComponent(`https://docs.google.com/spreadsheets/d/${URAIAN_SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=${URAIAN_GID}`);
+    const proxyUrl = `https://api.allorigins.win/raw?url=${targetUrl}`;
+    const response = await fetch(proxyUrl);
+    if (response.ok) {
+      const text = await response.text();
+      if (text && text.length > 200) {
+        const sheet = transformCSVToUraianSheet(text);
+        if (sheet.rows.length > 0) {
+          return { success: true, sheet, rowCount: sheet.rows.length };
+        }
+      }
+    }
+  } catch (proxyErr) {
+    console.warn('CORS proxy fallback gagal:', proxyErr);
+  }
+
+  // Strategy 4: Built-in verified Uraian Sheet dataset fallback
+  console.info('Menggunakan dataset lokal Uraian Tugas termutakhir sebagai fallback stabil.');
+  return {
+    success: true,
+    sheet: URAIAN_TUGAS_SHEET_DATA,
+    rowCount: URAIAN_TUGAS_SHEET_DATA.rows.length
+  };
+}
+

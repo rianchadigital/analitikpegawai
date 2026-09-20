@@ -82,6 +82,7 @@ export interface ReportOptions {
   statsHtml?: string;
   extraHtml?: string;
   customNotes?: string;
+  metaInfo?: string;
 }
 
 export function generateKopSuratHtml(): string {
@@ -413,6 +414,7 @@ export function printReportInNewTab(options: ReportOptions) {
       <h2>${options.title}</h2>
       <p>Sistem Informasi Manajemen Kepegawaian (SIMPEG Digital SDMK) • Tanggal Cetak: ${currentDate}</p>
       ${options.subtitle ? `<p style="font-size: 8pt; color: #64748b; margin-top: 2px;">${options.subtitle}</p>` : ''}
+      ${options.metaInfo ? `<p style="font-size: 8pt; color: #334155; font-weight: 600; margin-top: 4px;">${options.metaInfo}</p>` : ''}
     </div>
 
     ${options.statsHtml || ''}

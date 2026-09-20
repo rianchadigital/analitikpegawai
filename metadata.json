@@ -1,6 +1,6 @@
 {
   "name": "Data Sheet Analitik",
-  "description": "Aplikasi pengelolaan data lembar kerja interaktif dan dashboard analitik terpadu dengan visualisasi grafik, formula, filter, dan agregasi data.",
+  "description": "Aplikasi pengelolaan data lembar kerja interaktif, dashboard analitik SDMK, matriks pivot lengkap, monitoring keterisian kolom dengan cetak PDF, pengelolaan dan pencetakan kartu uraian tugas pegawai, serta bagan struktur organisasi Puskesmas tipe ILP dan Pergub DKI No. 14 Tahun 2023.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

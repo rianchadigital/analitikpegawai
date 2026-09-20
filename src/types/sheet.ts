@@ -67,4 +67,4 @@ export interface AIAnalysisResult {
   actionableRecommendations: string[];
 }
 
-export type ActiveTab = 'sheet' | 'analytics' | 'pivot' | 'ai';
+export type ActiveTab = 'sheet' | 'analytics' | 'pivot' | 'ai' | 'uraian_tugas' | 'struktur_organisasi';

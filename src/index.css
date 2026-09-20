@@ -29,3 +29,45 @@
   background: #94a3b8;
 }
 
+@media print {
+  @page {
+    margin: 4mm;
+    size: auto;
+  }
+
+  html, body, #root, main, div {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background: #ffffff !important;
+  }
+
+  /* Hide app navigation and non-printable UI */
+  nav, header, aside, .print\:hidden, [data-no-print="true"] {
+    display: none !important;
+  }
+
+  #bagan-ilp-lampiran-1, #bagan-pergub-lampiran-2 {
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  #official-kartu-uraian-paper {
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    page-break-inside: avoid !important;
+  }
+}
+

@@ -64,7 +64,7 @@ export const MatrixPivot: React.FC<MatrixPivotProps> = ({ sheet }) => {
       id: 'jenjang_saat_ini', 
       label: 'JENJANG SAAT INI', 
       group: 'Unit & Formasi Jabatan',
-      aliases: ['JENJANG SAAT INI', 'jenjang_saat_ini']
+      aliases: ['JENJANG SAAT INI', 'jenjang_saat_ini', 'jenjang']
     },
     { 
       id: 'jenis_tenaga', 
@@ -88,7 +88,7 @@ export const MatrixPivot: React.FC<MatrixPivotProps> = ({ sheet }) => {
     },
     { 
       id: 'nip', 
-      label: 'NIP/ ID PEGAWAI', 
+      label: 'NIP / ID PEGAWAI', 
       group: 'Status & Kepegawaian',
       aliases: ['NIP/ ID PEGAWAI', 'NIP / ID PEGAWAI', 'nip', 'NIP', 'id_pegawai']
     },
@@ -105,7 +105,7 @@ export const MatrixPivot: React.FC<MatrixPivotProps> = ({ sheet }) => {
     },
     { 
       id: 'gol', 
-      label: 'GOL', 
+      label: 'GOLONGAN / PANGKAT', 
       group: 'Status & Kepegawaian',
       aliases: ['GOL', 'gol', 'golongan', 'pangkat_golongan']
     },
@@ -155,131 +155,36 @@ export const MatrixPivot: React.FC<MatrixPivotProps> = ({ sheet }) => {
         return '(Kosong)';
       }
     },
-
-    // 3. Usia & Pensiun
     { 
-      id: 'usia', 
-      label: 'USIA', 
-      group: 'Usia & Pensiun',
-      aliases: ['USIA', 'usia'],
+      id: 'masa_kerja_tahun', 
+      label: 'MASA KERJA (TAHUN)', 
+      group: 'Status & Kepegawaian',
+      aliases: ['masa_kerja_tahun', 'Masa Kerja (Thn)'],
       getValue: (r) => {
-        if (r.usia) return String(r.usia);
-        if (r['USIA']) return String(r['USIA']);
-        if (r.usia_tahun) return `${r.usia_tahun} Thn`;
+        if (r.masa_kerja_tahun !== undefined && r.masa_kerja_tahun !== null) return `${r.masa_kerja_tahun} Thn`;
         return '(Kosong)';
       }
     },
-    { 
-      id: 'kelompok_usia', 
-      label: 'KELOMPOK USIA', 
-      group: 'Usia & Pensiun',
-      aliases: ['KELOMPOK USIA', 'kelompok_usia']
-    },
-    { 
-      id: 'tanggal_pensiun', 
-      label: 'PENSIUN', 
-      group: 'Usia & Pensiun',
-      aliases: ['PENSIUN', 'tanggal_pensiun', 'tgl_pensiun', 'pensiun']
-    },
-    { 
-      id: 'prediksi_pensiun', 
-      label: 'PREDIKSI', 
-      group: 'Usia & Pensiun',
-      aliases: ['PREDIKSI', 'prediksi', 'prediksi_pensiun', 'sisa_pensiun'],
-      getValue: (r) => {
-        if (r.prediksi) return String(r.prediksi);
-        if (r['PREDIKSI']) return String(r['PREDIKSI']);
-        if (r.prediksi_pensiun) return String(r.prediksi_pensiun);
-        if (r.tanggal_pensiun && String(r.tanggal_pensiun).includes('/')) {
-          const parts = String(r.tanggal_pensiun).split('/');
-          const yr = parts[parts.length - 1];
-          if (yr && yr.length === 4) return `Tahun ${yr}`;
-        }
-        if (r.sisa_pensiun) return String(r.sisa_pensiun);
-        return '(Belum Ada)';
-      }
-    },
 
-    // 4. Jam Kerja & Tim
+    // 3. Biodata & Demografi
     { 
-      id: 'jam_kerja', 
-      label: 'JAM KERJA KEPGUB 755', 
-      group: 'Jam Kerja & Tim',
-      aliases: ['JAM KERJA KEPGUB 755', 'jam_kerja', 'JAM KERJA', 'jam_kerja_kepgub']
+      id: 'nama_gelar', 
+      label: 'NAMA LENGKAP & GELAR', 
+      group: 'Biodata & Demografi',
+      aliases: ['nama_gelar', 'NAMA DENGAN GELAR', 'nama', 'NAMA']
     },
     { 
-      id: 'kerja_tim', 
-      label: 'KERJA TIM', 
-      group: 'Jam Kerja & Tim',
-      aliases: ['KERJA TIM', 'kerja_tim', 'shift', 'tim']
-    },
-
-    // 5. Domisili & Wilayah
-    { 
-      id: 'provinsi', 
-      label: 'PROVINSI', 
-      group: 'Domisili & Wilayah',
-      aliases: ['PROVINSI', 'provinsi']
+      id: 'nama', 
+      label: 'NAMA (TANPA GELAR)', 
+      group: 'Biodata & Demografi',
+      aliases: ['nama', 'NAMA']
     },
     { 
-      id: 'kab_kota', 
-      label: 'KAB', 
-      group: 'Domisili & Wilayah',
-      aliases: ['KAB', 'kab', 'kab_kota', 'kabupaten', 'kota', 'KAB/KOTA']
+      id: 'nik', 
+      label: 'NIK KTP', 
+      group: 'Biodata & Demografi',
+      aliases: ['NIK', 'nik']
     },
-    { 
-      id: 'kecamatan', 
-      label: 'KECAMATAN', 
-      group: 'Domisili & Wilayah',
-      aliases: ['KECAMATAN', 'kecamatan']
-    },
-    { 
-      id: 'kelurahan', 
-      label: 'KELURAHAN', 
-      group: 'Domisili & Wilayah',
-      aliases: ['KELURAHAN', 'kelurahan']
-    },
-    { 
-      id: 'alamat', 
-      label: 'ALAMAT', 
-      group: 'Domisili & Wilayah',
-      aliases: ['ALAMAT', 'alamat', 'alamat_lengkap']
-    },
-    { 
-      id: 'domisili_wilayah', 
-      label: 'WILAYAH DOMISILI', 
-      group: 'Domisili & Wilayah',
-      aliases: ['WILAYAH DOMISILI', 'domisili_wilayah']
-    },
-
-    // 6. Pendidikan & Ijazah
-    { 
-      id: 'pendidikan', 
-      label: 'PENDIDIKAN', 
-      group: 'Pendidikan & Ijazah',
-      aliases: ['PENDIDIKAN', 'pendidikan', 'jenjang_pendidikan']
-    },
-    { 
-      id: 'sekolah_pt', 
-      label: 'NAMA SEKOLAH / PT', 
-      group: 'Pendidikan & Ijazah',
-      aliases: ['NAMA SEKOLAH / PT', 'NAMA SEKOLAH', 'sekolah_pt', 'asal_sekolah']
-    },
-    { 
-      id: 'nomor_ijazah', 
-      label: 'NOMOR IAJZAH', 
-      group: 'Pendidikan & Ijazah',
-      aliases: ['NOMOR IAJZAH', 'NOMOR IJAZAH', 'nomor_ijazah', 'no_ijazah'],
-      getValue: (r) => r.nomor_ijazah || r['NOMOR IAJZAH'] || r['NOMOR IJAZAH'] || (r.sekolah_pt ? 'Tercatat di Berkas' : '(Belum Input)')
-    },
-    { 
-      id: 'tahun_lulus', 
-      label: 'TAHUN LULUS', 
-      group: 'Pendidikan & Ijazah',
-      aliases: ['TAHUN LULUS', 'tahun_lulus']
-    },
-
-    // 7. Biodata & Demografi
     { 
       id: 'jenis_kelamin', 
       label: 'JENIS KELAMIN', 
@@ -304,20 +209,165 @@ export const MatrixPivot: React.FC<MatrixPivotProps> = ({ sheet }) => {
       group: 'Biodata & Demografi',
       aliases: ['TANGGAL LAHIR', 'tanggal_lahir']
     },
+
+    // 4. Usia & Pensiun
     { 
-      id: 'nik', 
-      label: 'NIK', 
-      group: 'Biodata & Demografi',
-      aliases: ['NIK', 'nik']
+      id: 'usia', 
+      label: 'USIA', 
+      group: 'Usia & Pensiun',
+      aliases: ['USIA', 'usia'],
+      getValue: (r) => {
+        if (r.usia) return String(r.usia);
+        if (r['USIA']) return String(r['USIA']);
+        if (r.usia_tahun) return `${r.usia_tahun} Thn`;
+        return '(Kosong)';
+      }
     },
     { 
-      id: 'nama_gelar', 
-      label: 'NAMA LENGKAP & GELAR', 
-      group: 'Biodata & Demografi',
-      aliases: ['nama_gelar', 'nama', 'NAMA']
+      id: 'usia_tahun', 
+      label: 'USIA (TAHUN)', 
+      group: 'Usia & Pensiun',
+      aliases: ['usia_tahun', 'Usia (Thn)'],
+      getValue: (r) => {
+        if (r.usia_tahun !== undefined && r.usia_tahun !== null) return `${r.usia_tahun} Thn`;
+        return '(Kosong)';
+      }
+    },
+    { 
+      id: 'kelompok_usia', 
+      label: 'KELOMPOK USIA', 
+      group: 'Usia & Pensiun',
+      aliases: ['KELOMPOK USIA', 'kelompok_usia']
+    },
+    { 
+      id: 'tanggal_pensiun', 
+      label: 'TANGGAL PENSIUN', 
+      group: 'Usia & Pensiun',
+      aliases: ['PENSIUN', 'tanggal_pensiun', 'tgl_pensiun', 'pensiun']
+    },
+    { 
+      id: 'prediksi_pensiun', 
+      label: 'PREDIKSI / SISA PENSIUN', 
+      group: 'Usia & Pensiun',
+      aliases: ['PREDIKSI', 'prediksi', 'prediksi_pensiun', 'sisa_pensiun'],
+      getValue: (r) => {
+        if (r.prediksi) return String(r.prediksi);
+        if (r['PREDIKSI']) return String(r['PREDIKSI']);
+        if (r.prediksi_pensiun) return String(r.prediksi_pensiun);
+        if (r.tanggal_pensiun && String(r.tanggal_pensiun).includes('/')) {
+          const parts = String(r.tanggal_pensiun).split('/');
+          const yr = parts[parts.length - 1];
+          if (yr && yr.length === 4) return `Tahun ${yr}`;
+        }
+        if (r.sisa_pensiun) return String(r.sisa_pensiun);
+        return '(Belum Ada)';
+      }
+    },
+    { 
+      id: 'sisa_pensiun_tahun', 
+      label: 'SISA PENSIUN (TAHUN)', 
+      group: 'Usia & Pensiun',
+      aliases: ['sisa_pensiun_tahun', 'Sisa Pensiun (Thn)'],
+      getValue: (r) => {
+        if (r.sisa_pensiun_tahun !== undefined && r.sisa_pensiun_tahun !== null) return `${r.sisa_pensiun_tahun} Thn`;
+        return '(Kosong)';
+      }
     },
 
-    // 8. Legalitas STR & SIP
+    // 5. Pendidikan & Ijazah
+    { 
+      id: 'pendidikan', 
+      label: 'PENDIDIKAN', 
+      group: 'Pendidikan & Ijazah',
+      aliases: ['PENDIDIKAN', 'pendidikan', 'jenjang_pendidikan']
+    },
+    { 
+      id: 'sekolah_pt', 
+      label: 'NAMA SEKOLAH / PT', 
+      group: 'Pendidikan & Ijazah',
+      aliases: ['NAMA SEKOLAH / PT', 'NAMA SEKOLAH', 'sekolah_pt', 'asal_sekolah']
+    },
+    { 
+      id: 'nomor_ijazah', 
+      label: 'NOMOR IJAZAH', 
+      group: 'Pendidikan & Ijazah',
+      aliases: ['NOMOR IAJZAH', 'NOMOR IJAZAH', 'nomor_ijazah', 'no_ijazah'],
+      getValue: (r) => r.nomor_ijazah || r['NOMOR IAJZAH'] || r['NOMOR IJAZAH'] || (r.sekolah_pt ? 'Tercatat di Berkas' : '(Belum Input)')
+    },
+    { 
+      id: 'tahun_lulus', 
+      label: 'TAHUN LULUS', 
+      group: 'Pendidikan & Ijazah',
+      aliases: ['TAHUN LULUS', 'tahun_lulus']
+    },
+
+    // 6. Kontak & Komunikasi
+    { 
+      id: 'nomor_hp', 
+      label: 'NOMOR HP / WA', 
+      group: 'Kontak & Komunikasi',
+      aliases: ['nomor_hp', 'NOMOR HP', 'no_hp', 'telepon', 'No. HP / WA']
+    },
+    { 
+      id: 'email', 
+      label: 'ALAMAT EMAIL', 
+      group: 'Kontak & Komunikasi',
+      aliases: ['email', 'EMAIL']
+    },
+
+    // 7. Domisili & Wilayah
+    { 
+      id: 'domisili_wilayah', 
+      label: 'WILAYAH DOMISILI', 
+      group: 'Domisili & Wilayah',
+      aliases: ['WILAYAH DOMISILI', 'domisili_wilayah']
+    },
+    { 
+      id: 'provinsi', 
+      label: 'PROVINSI', 
+      group: 'Domisili & Wilayah',
+      aliases: ['PROVINSI', 'provinsi']
+    },
+    { 
+      id: 'kab_kota', 
+      label: 'KAB / KOTA', 
+      group: 'Domisili & Wilayah',
+      aliases: ['KAB', 'kab', 'kab_kota', 'kabupaten', 'kota', 'KAB/KOTA', 'Kab / Kota Domisili']
+    },
+    { 
+      id: 'kecamatan', 
+      label: 'KECAMATAN', 
+      group: 'Domisili & Wilayah',
+      aliases: ['KECAMATAN', 'kecamatan']
+    },
+    { 
+      id: 'kelurahan', 
+      label: 'KELURAHAN', 
+      group: 'Domisili & Wilayah',
+      aliases: ['KELURAHAN', 'kelurahan']
+    },
+    { 
+      id: 'alamat', 
+      label: 'ALAMAT LENGKAP', 
+      group: 'Domisili & Wilayah',
+      aliases: ['ALAMAT', 'alamat', 'alamat_lengkap']
+    },
+
+    // 8. Jam Kerja & Tim
+    { 
+      id: 'jam_kerja', 
+      label: 'JAM KERJA KEPGUB 755', 
+      group: 'Jam Kerja & Tim',
+      aliases: ['JAM KERJA KEPGUB 755', 'jam_kerja', 'JAM KERJA', 'jam_kerja_kepgub']
+    },
+    { 
+      id: 'kerja_tim', 
+      label: 'KERJA TIM / SHIFT', 
+      group: 'Jam Kerja & Tim',
+      aliases: ['KERJA TIM', 'kerja_tim', 'shift', 'tim']
+    },
+
+    // 9. Legalitas STR & SIP
     { 
       id: 'status_str', 
       label: 'STATUS STR', 
@@ -328,7 +378,13 @@ export const MatrixPivot: React.FC<MatrixPivotProps> = ({ sheet }) => {
       id: 'no_str', 
       label: 'NO. STR', 
       group: 'Legalitas STR & SIP',
-      aliases: ['NO. STR', 'no_str']
+      aliases: ['NO. STR', 'no_str', 'NOMOR STR']
+    },
+    { 
+      id: 'masa_berlaku_str', 
+      label: 'MASA BERLAKU STR', 
+      group: 'Legalitas STR & SIP',
+      aliases: ['masa_berlaku_str', 'MASA BERLAKU STR']
     },
     { 
       id: 'status_sip', 
@@ -340,36 +396,78 @@ export const MatrixPivot: React.FC<MatrixPivotProps> = ({ sheet }) => {
       id: 'no_sip', 
       label: 'NO. SIP', 
       group: 'Legalitas STR & SIP',
-      aliases: ['NO. SIP', 'no_sip']
+      aliases: ['NO. SIP', 'no_sip', 'SIP', 'NOMOR SIP']
+    },
+    { 
+      id: 'tgl_terbit_sip', 
+      label: 'TANGGAL TERBIT SIP', 
+      group: 'Legalitas STR & SIP',
+      aliases: ['tgl_terbit_sip', 'TANGGAL TERBIT SIP']
+    },
+    { 
+      id: 'tgl_berakhir_sip', 
+      label: 'TANGGAL BERAKHIR SIP', 
+      group: 'Legalitas STR & SIP',
+      aliases: ['tgl_berakhir_sip', 'TANGGAL BERAKHIR SIP']
+    },
+    { 
+      id: 'masa_berlaku_sip', 
+      label: 'MASA BERLAKU SIP', 
+      group: 'Legalitas STR & SIP',
+      aliases: ['masa_berlaku_sip', 'MASA BERLAKU SIP']
     }
   ], []);
 
-  // Merge any other dynamic columns found in sheet.columns that aren't already represented
+  // Merge any other dynamic columns found in sheet.columns or sheet.rows that aren't already represented
   const allDimensions = useMemo(() => {
-    const existingIds = new Set(masterDimensions.map(d => d.id));
+    const existingIds = new Set(masterDimensions.map(d => d.id.toLowerCase()));
     const extraDims: PivotDimension[] = [];
 
-    sheet.columns.forEach(col => {
-      // Avoid raw ID column or duplicates
-      if (col.id === '_id' || col.id === 'no' || existingIds.has(col.id)) return;
-      
-      // Check if alias matches any master
-      const isRepresented = masterDimensions.some(m => 
-        m.aliases.some(a => a.toLowerCase() === col.id.toLowerCase() || a.toLowerCase() === col.name.toLowerCase())
+    // Helper to check if a key/name is represented
+    const isRepresented = (key: string, name: string) => {
+      const k = key.toLowerCase();
+      const n = name.toLowerCase();
+      return masterDimensions.some(m => 
+        m.id.toLowerCase() === k || 
+        m.label.toLowerCase() === n ||
+        m.aliases.some(a => a.toLowerCase() === k || a.toLowerCase() === n)
       );
+    };
 
-      if (!isRepresented) {
+    // 1. From sheet.columns
+    sheet.columns.forEach(col => {
+      if (col.id === '_id' || col.id === 'no' || existingIds.has(col.id.toLowerCase())) return;
+      
+      if (!isRepresented(col.id, col.name)) {
         extraDims.push({
           id: col.id,
           label: col.name.toUpperCase(),
-          group: 'Kolom Sheet Tambahan',
+          group: 'Kolom Tambahan Lainnya',
           aliases: [col.id, col.name]
         });
+        existingIds.add(col.id.toLowerCase());
       }
     });
 
+    // 2. From actual row keys (for any extra headers from imported spreadsheet)
+    if (sheet.rows.length > 0) {
+      const sampleRow = sheet.rows[0];
+      Object.keys(sampleRow).forEach(key => {
+        if (key === '_id' || key === 'no' || existingIds.has(key.toLowerCase())) return;
+        if (!isRepresented(key, key)) {
+          extraDims.push({
+            id: key,
+            label: key.replace(/_/g, ' ').toUpperCase(),
+            group: 'Kolom Tambahan Lainnya',
+            aliases: [key]
+          });
+          existingIds.add(key.toLowerCase());
+        }
+      });
+    }
+
     return [...masterDimensions, ...extraDims];
-  }, [masterDimensions, sheet.columns]);
+  }, [masterDimensions, sheet.columns, sheet.rows]);
 
   // Grouped dimensions for <optgroup>
   const groupedDimensions = useMemo(() => {

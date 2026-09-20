@@ -18,10 +18,13 @@ import { StrSipMonitoring } from './StrSipMonitoring';
 import { ProyeksiPensiun } from './ProyeksiPensiun';
 import { SebaranWilayah } from './SebaranWilayah';
 import { DukPegawai } from './DukPegawai';
+import { MonitoringKelengkapan } from './MonitoringKelengkapan';
+import { ClipboardCheck } from 'lucide-react';
 
 export type AnalyticsSubTab = 
   | 'grafik_visual'
   | 'duk'
+  | 'monitoring'
   | 'domisili'
   | 'matrix_pivot'
   | 'str_sip'
@@ -57,11 +60,11 @@ export const AnalyticsWorkspace: React.FC<AnalyticsWorkspaceProps> = ({
       desc: 'Daftar Urut Kepangkatan khusus ASN (PNS, CPNS & PPPK) urut pangkat tertinggi'
     },
     {
-      id: 'domisili' as AnalyticsSubTab,
-      label: 'Domisili Tempat Tinggal',
-      icon: Home,
-      color: 'text-teal-600',
-      desc: 'Pengelolaan data alamat tinggal staf'
+      id: 'monitoring' as AnalyticsSubTab,
+      label: 'Monitoring Keterisian Data',
+      icon: ClipboardCheck,
+      color: 'text-emerald-600',
+      desc: 'Monitoring kelengkapan dan keterisian kolom data pegawai, deteksi isian kosong, serta cetak laporan PDF resmi'
     },
     {
       id: 'matrix_pivot' as AnalyticsSubTab,
@@ -69,6 +72,13 @@ export const AnalyticsWorkspace: React.FC<AnalyticsWorkspaceProps> = ({
       icon: Grid,
       color: 'text-cyan-600',
       desc: 'Tabulasi silang dimensi 2D'
+    },
+    {
+      id: 'domisili' as AnalyticsSubTab,
+      label: 'Domisili Tempat Tinggal',
+      icon: Home,
+      color: 'text-teal-600',
+      desc: 'Pengelolaan data alamat tinggal staf'
     },
     {
       id: 'str_sip' as AnalyticsSubTab,
@@ -130,11 +140,14 @@ export const AnalyticsWorkspace: React.FC<AnalyticsWorkspaceProps> = ({
         {activeSubTab === 'duk' && (
           <DukPegawai sheet={sheet} />
         )}
-        {activeSubTab === 'domisili' && (
-          <DomisiliManager sheet={sheet} onUpdateRow={onUpdateRow} />
+        {activeSubTab === 'monitoring' && (
+          <MonitoringKelengkapan sheet={sheet} />
         )}
         {activeSubTab === 'matrix_pivot' && (
           <MatrixPivot sheet={sheet} />
+        )}
+        {activeSubTab === 'domisili' && (
+          <DomisiliManager sheet={sheet} onUpdateRow={onUpdateRow} />
         )}
         {activeSubTab === 'str_sip' && (
           <StrSipMonitoring sheet={sheet} onUpdateRow={onUpdateRow} />

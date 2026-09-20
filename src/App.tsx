@@ -8,16 +8,19 @@ import { Trash2, AlertTriangle } from 'lucide-react';
 import { Sheet, ActiveTab, FilterCondition, ColumnDef, RowData } from './types/sheet';
 import { DEFAULT_SHEETS } from './data/defaultSheets';
 import { exportSheetToCsv, recalculateRow } from './utils/analytics';
-import { syncGoogleSheetData } from './utils/googleSheetSync';
+import { syncGoogleSheetData, syncUraianTugasData } from './utils/googleSheetSync';
 import { Header } from './components/Header';
 import { DataSheet } from './components/DataSheet';
 import { AnalyticsWorkspace } from './components/analytics/AnalyticsWorkspace';
 import { SmartInsights } from './components/SmartInsights';
+import { UraianTugasManager } from './components/uraian/UraianTugasManager';
+import { StrukturOrganisasiWorkspace } from './components/struktur/StrukturOrganisasiWorkspace';
 import { AddColumnModal } from './components/Modals/AddColumnModal';
 import { ImportCsvModal } from './components/Modals/ImportCsvModal';
 import { FilterModal } from './components/Modals/FilterModal';
+import { fetchServerStaffPhotos } from './utils/googleDriveHelper';
 
-const STORAGE_KEY = 'sheet_analitik_sdmk_v4';
+const STORAGE_KEY = 'sheet_analitik_sdmk_v6';
 
 // Validasi apakah baris data tergeser / terkorupsi dari cache versi terdahulu
 export function isSheetDataCorrupted(sheet: Sheet): boolean {
@@ -38,12 +41,22 @@ export function isSheetDataCorrupted(sheet: Sheet): boolean {
   return corruptedCount >= 2;
 }
 
+export function isUraianCorrupted(sheet: Sheet): boolean {
+  if (!sheet || !Array.isArray(sheet.rows) || sheet.rows.length < 100) return true;
+  // Periksa apakah baris pertama bukan Kepala Puskesmas dr. Ignatius Dendy Purnama
+  const firstRow = sheet.rows[0];
+  if (!firstRow || !String(firstRow.nama || '').toLowerCase().includes('ignatius')) {
+    return true;
+  }
+  return false;
+}
+
 export default function App() {
   // Initialize Sheets from LocalStorage with Auto-Healing or Default Templates
   const [sheets, setSheets] = useState<Sheet[]>(() => {
     try {
       // Bersihkan key legacy yang berpotensi menyimpan cache baris tergeser
-      ['sheet_analitik_state_v1', 'sheet_analitik_state_v2', 'sheet_analitik_state_v3'].forEach(k => {
+      ['sheet_analitik_state_v1', 'sheet_analitik_state_v2', 'sheet_analitik_state_v3', 'sheet_analitik_sdmk_v4', 'sheet_analitik_sdmk_v5'].forEach(k => {
         try { localStorage.removeItem(k); } catch {}
       });
 
@@ -51,15 +64,27 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
+          let currentSheets = parsed;
+          const hasUraian = currentSheets.some((s: Sheet) => s.id === 'sheet-uraian-tugas');
+          if (!hasUraian && DEFAULT_SHEETS.length > 1) {
+            currentSheets = [...currentSheets, DEFAULT_SHEETS[1]];
+          } else if (hasUraian) {
+            const uraianSheet = currentSheets.find((s: Sheet) => s.id === 'sheet-uraian-tugas');
+            if (uraianSheet && isUraianCorrupted(uraianSheet)) {
+              console.warn("Memulihkan sheet uraian tugas dengan dataset 164 pegawai resmi termutakhir...");
+              currentSheets = currentSheets.map((s: Sheet) => s.id === 'sheet-uraian-tugas' ? DEFAULT_SHEETS[1] : s);
+            }
+          }
+
           // Cek apakah data master tergeser/terkorupsi
-          const masterSheet = parsed.find((s: Sheet) => s.id === 'sheet-master-puskesmas');
+          const masterSheet = currentSheets.find((s: Sheet) => s.id === 'sheet-master-puskesmas');
           if (masterSheet && isSheetDataCorrupted(masterSheet)) {
             console.warn("Mendeteksi data master SDMK terkorupsi di cache browser. Memulihkan dengan master data resmi...");
-            const healed = parsed.map((s: Sheet) => s.id === 'sheet-master-puskesmas' ? DEFAULT_SHEETS[0] : s);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(healed));
-            return healed;
+            currentSheets = currentSheets.map((s: Sheet) => s.id === 'sheet-master-puskesmas' ? DEFAULT_SHEETS[0] : s);
           }
-          return parsed;
+
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(currentSheets));
+          return currentSheets;
         }
       }
     } catch (e) {
@@ -67,6 +92,38 @@ export default function App() {
     }
     return DEFAULT_SHEETS;
   });
+
+  // Sinkronisasi foto pegawai dari Cloud Server pada saat pertama kali dimuat
+  useEffect(() => {
+    async function syncPhotosFromServer() {
+      try {
+        const serverPhotos = await fetchServerStaffPhotos();
+        if (serverPhotos && Object.keys(serverPhotos).length > 0) {
+          setSheets(prev => {
+            let changed = false;
+            const nextSheets = prev.map(s => {
+              const updatedRows = s.rows.map(r => {
+                const nipKey = String(r.nip || '').trim();
+                const idKey = r._id;
+                const nameKey = r.nama ? `nama:${String(r.nama).trim().toLowerCase()}` : '';
+                const savedPhoto = serverPhotos[nipKey] || serverPhotos[idKey] || (nameKey ? serverPhotos[nameKey] : undefined);
+                if (savedPhoto && savedPhoto !== r.foto) {
+                  changed = true;
+                  return { ...r, foto: savedPhoto };
+                }
+                return r;
+              });
+              return changed ? { ...s, rows: updatedRows } : s;
+            });
+            return changed ? nextSheets : prev;
+          });
+        }
+      } catch (err) {
+        console.warn("Gagal menyinkronkan foto dari server:", err);
+      }
+    }
+    syncPhotosFromServer();
+  }, []);
 
   const [activeSheetId, setActiveSheetId] = useState<string>(() => {
     return 'sheet-master-puskesmas';
@@ -97,6 +154,33 @@ export default function App() {
   const handleSyncGoogleSheet = async () => {
     try {
       setIsSyncing(true);
+
+      // Jika sedang di sheet Uraian Tugas atau tab Uraian Tugas, sinkronkan data Uraian Tugas
+      if (activeSheetId === 'sheet-uraian-tugas' || activeTab === 'uraian_tugas') {
+        const data = await syncUraianTugasData();
+        if (data.success && data.sheet) {
+          const existingIdx = sheets.findIndex(s => s.id === 'sheet-uraian-tugas');
+          let nextSheets: Sheet[];
+          if (existingIdx >= 0) {
+            nextSheets = sheets.map(s => s.id === 'sheet-uraian-tugas' ? data.sheet! : s);
+          } else {
+            nextSheets = [...sheets, data.sheet!];
+          }
+          updateSheetsState(nextSheets);
+          setSyncToast({
+            message: `Berhasil sinkronisasi data Uraian Tugas: ${data.rowCount || data.sheet.rows.length} pegawai termutakhir.`,
+            type: 'success'
+          });
+        } else {
+          setSyncToast({
+            message: `Gagal sinkronisasi Uraian Tugas: ${data.error || 'Respon tidak valid'}`,
+            type: 'error'
+          });
+        }
+        return;
+      }
+
+      // Default: Sinkronisasi Master SDMK Puskesmas
       const data = await syncGoogleSheetData();
       if (data.success && data.sheet) {
         const existingIdx = sheets.findIndex(s => s.id === 'sheet-master-puskesmas');
@@ -411,6 +495,32 @@ export default function App() {
 
       {/* Main Workspace Area */}
       <main className="flex-1 overflow-hidden">
+        {activeTab === 'uraian_tugas' && (
+          <div className="h-full overflow-y-auto p-4 md:p-6 bg-slate-50/70">
+            <UraianTugasManager
+              sheet={sheets.find(s => s.id === 'sheet-uraian-tugas') || activeSheet}
+              onUpdateSheet={(updated) => {
+                const nextSheets = sheets.map(s => s.id === updated.id ? updated : s);
+                updateSheetsState(nextSheets);
+              }}
+              onSyncGoogleSheet={handleSyncGoogleSheet}
+              isSyncing={isSyncing}
+            />
+          </div>
+        )}
+
+        {activeTab === 'struktur_organisasi' && (
+          <div className="h-full overflow-y-auto p-4 md:p-6 bg-slate-50/70">
+            <StrukturOrganisasiWorkspace
+              sheet={sheets.find(s => s.id === 'sheet-uraian-tugas') || activeSheet}
+              onUpdateSheet={(updatedSheet) => {
+                const nextSheets = sheets.map(s => s.id === updatedSheet.id ? updatedSheet : s);
+                updateSheetsState(nextSheets);
+              }}
+            />
+          </div>
+        )}
+
         {activeTab === 'sheet' && (
           <DataSheet
             sheet={activeSheet}
