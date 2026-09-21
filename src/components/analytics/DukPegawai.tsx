@@ -634,7 +634,7 @@ export const DukPegawai: React.FC<DukPegawaiProps> = ({ sheet }) => {
                 Jl. Pulau Tidung RT 01/RW 01, Kel. Pulau Tidung, Kec. Kepulauan Seribu Selatan, Kab. Adm. Kepulauan Seribu, Kode Pos 14520
               </p>
               <p className="text-[9px] md:text-[10px] text-slate-800 font-sans">
-                Email: <span className="text-blue-700 font-medium">pkmkepseributara@jakarta.go.id</span> • JAKARTA
+                Email / Pos-el: <span className="text-blue-700 font-medium">puskesmasseribuselatan.jakarta.go.id</span> • JAKARTA
               </p>
             </div>
 

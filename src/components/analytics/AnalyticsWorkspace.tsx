@@ -19,10 +19,12 @@ import { ProyeksiPensiun } from './ProyeksiPensiun';
 import { SebaranWilayah } from './SebaranWilayah';
 import { DukPegawai } from './DukPegawai';
 import { MonitoringKelengkapan } from './MonitoringKelengkapan';
-import { ClipboardCheck } from 'lucide-react';
+import { DataPegawaiRingkas } from './DataPegawaiRingkas';
+import { ClipboardCheck, Users } from 'lucide-react';
 
 export type AnalyticsSubTab = 
   | 'grafik_visual'
+  | 'data_pegawai'
   | 'duk'
   | 'monitoring'
   | 'domisili'
@@ -51,6 +53,13 @@ export const AnalyticsWorkspace: React.FC<AnalyticsWorkspaceProps> = ({
       icon: PieIcon,
       color: 'text-blue-600',
       desc: 'Dashboard ringkasan metrik & grafik visual'
+    },
+    {
+      id: 'data_pegawai' as AnalyticsSubTab,
+      label: 'Data Pegawai',
+      icon: Users,
+      color: 'text-emerald-600',
+      desc: 'Tabel data pegawai ringkas, filter, profil rincian & cetak PDF resmi Puskesmas'
     },
     {
       id: 'duk' as AnalyticsSubTab,
@@ -136,6 +145,9 @@ export const AnalyticsWorkspace: React.FC<AnalyticsWorkspaceProps> = ({
       <div className="animate-in fade-in duration-150">
         {activeSubTab === 'grafik_visual' && (
           <GrafikVisual sheet={sheet} />
+        )}
+        {activeSubTab === 'data_pegawai' && (
+          <DataPegawaiRingkas sheet={sheet} onUpdateRow={onUpdateRow} />
         )}
         {activeSubTab === 'duk' && (
           <DukPegawai sheet={sheet} />

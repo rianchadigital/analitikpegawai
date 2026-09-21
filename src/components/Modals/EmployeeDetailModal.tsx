@@ -14,6 +14,8 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { RowData } from '../../types/sheet';
+import { ProfilPegawaiModal } from './ProfilPegawaiModal';
+import { FileText } from 'lucide-react';
 
 interface EmployeeDetailModalProps {
   isOpen: boolean;
@@ -26,6 +28,8 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
   onClose,
   employee
 }) => {
+  const [isProfilModalOpen, setIsProfilModalOpen] = React.useState(false);
+
   if (!isOpen || !employee) return null;
 
   const isNakes = employee.jenis_tenaga === 'Tenaga Kesehatan';
@@ -246,17 +250,33 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
 
         {/* Modal Footer */}
         <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-          <span className="text-[11px] text-slate-600">
-            Sumber Data: Google Sheets Master Puskesmas Kepulauan Seribu Selatan
+          <span className="text-[11px] text-slate-600 hidden sm:inline">
+            Sumber Data: Master SDMK Puskesmas
           </span>
-          <button
-            onClick={onClose}
-            className="px-4 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg transition-colors"
-          >
-            Tutup
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsProfilModalOpen(true)}
+              className="px-3.5 py-1.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg shadow-xs transition-colors flex items-center gap-1.5"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Cetak Profil PDF Resmi</span>
+            </button>
+            <button
+              onClick={onClose}
+              className="px-4 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              Tutup
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Profil Pegawai Pop Up & Cetak PDF */}
+      <ProfilPegawaiModal
+        isOpen={isProfilModalOpen}
+        onClose={() => setIsProfilModalOpen(false)}
+        employee={employee}
+      />
     </div>
   );
 };

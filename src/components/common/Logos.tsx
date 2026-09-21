@@ -15,6 +15,7 @@ export const LogoDkiJakarta: React.FC<{ className?: string; src?: string }> = ({
         src={primarySrc} 
         alt="Lambang Jaya Raya DKI Jakarta" 
         className={`${className} object-contain`}
+        crossOrigin="anonymous"
         onError={(e) => {
           const target = e.currentTarget;
           if (target.src.endsWith('.png')) {
@@ -152,6 +153,7 @@ export const LogoPuskesmas: React.FC<{ className?: string; src?: string }> = ({
         src={primarySrc} 
         alt="Logo Puskesmas Kesehatan" 
         className={`${className} object-contain`}
+        crossOrigin="anonymous"
         onError={() => setImgError(true)}
       />
     );

@@ -118,7 +118,7 @@ export function generateKopSuratHtml(): string {
               Jl. Pulau Tidung RT 01/RW 01, Kel. Pulau Tidung, Kec. Kepulauan Seribu Selatan, Kab. Adm. Kepulauan Seribu, Kode Pos 14520
             </div>
             <div style="font-size: 8.5pt; color: #222; font-family: Arial, sans-serif; line-height: 1.3;">
-              Telepon: (021) - • Pos-el: <span style="color: #0369a1; font-weight: 600;">pkmkepseributara@jakarta.go.id</span> • JAKARTA
+              Telepon: (021) - • Pos-el: <span style="color: #0369a1; font-weight: 600;">puskesmasseribuselatan.jakarta.go.id</span> • JAKARTA
             </div>
           </td>
 
