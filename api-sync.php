@@ -14,8 +14,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$spreadsheetId = isset($_GET['spreadsheetId']) ? preg_replace('/[^a-zA-Z0-9_-]/', '', $_GET['spreadsheetId']) : '1ykpLnIE8305uphJMvXOdPuwb8T_mkQsnw8GOmByLFko';
-$gid = isset($_GET['gid']) ? preg_replace('/[^0-9]/', '', $_GET['gid']) : '1900197277';
+$type = isset($_GET['type']) ? strtolower(trim($_GET['type'])) : '';
+$isUraian = ($type === 'uraian') || 
+            (isset($_GET['spreadsheetId']) && $_GET['spreadsheetId'] === '10MGH1h8nirliwFsyICcCghylhARdjCt8ulhKfrng_c0');
+
+$defaultSpreadsheetId = $isUraian ? '10MGH1h8nirliwFsyICcCghylhARdjCt8ulhKfrng_c0' : '1ykpLnIE8305uphJMvXOdPuwb8T_mkQsnw8GOmByLFko';
+$defaultGid = $isUraian ? '0' : '1900197277';
+
+$spreadsheetId = (isset($_GET['spreadsheetId']) && !empty($_GET['spreadsheetId'])) ? preg_replace('/[^a-zA-Z0-9_-]/', '', $_GET['spreadsheetId']) : $defaultSpreadsheetId;
+$gid = (isset($_GET['gid']) && strlen($_GET['gid']) > 0) ? preg_replace('/[^0-9]/', '', $_GET['gid']) : $defaultGid;
 
 $gvizUrl = "https://docs.google.com/spreadsheets/d/{$spreadsheetId}/gviz/tq?tqx=out:csv&gid={$gid}";
 

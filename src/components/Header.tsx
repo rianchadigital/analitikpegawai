@@ -336,90 +336,91 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Workspace View Mode Selector */}
         <div className="flex items-center gap-1.5 py-1.5">
-          {/* JIKA LEMBAR DATA URAIAN TUGAS PEGAWAI AKTIF */}
-          {activeSheetId === 'sheet-uraian-tugas' ? (
-            <>
-              <button
-                id="tab-uraian-view"
-                onClick={() => onChangeTab('uraian_tugas')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                  activeTab === 'uraian_tugas'
-                    ? 'bg-emerald-700 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                }`}
-              >
-                <FileText className="w-3.5 h-3.5" />
-                <span>Pengelolaan & Kartu Uraian Tugas</span>
-              </button>
+          {/* 1. Master SDMK */}
+          <button
+            id="tab-master-sdmk-view"
+            onClick={() => {
+              onSelectSheet('sheet-master-puskesmas');
+              onChangeTab('sheet');
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              activeSheetId === 'sheet-master-puskesmas' && activeTab === 'sheet'
+                ? 'bg-emerald-700 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+            }`}
+            title="Buka Data Master SDMK 158 Pegawai Puskesmas"
+          >
+            <Table2 className="w-3.5 h-3.5" />
+            <span>Master SDMK (158)</span>
+          </button>
 
-              <button
-                id="tab-struktur-view"
-                onClick={() => onChangeTab('struktur_organisasi')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                  activeTab === 'struktur_organisasi'
-                    ? 'bg-emerald-700 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                }`}
-              >
-                <GitBranch className="w-3.5 h-3.5" />
-                <span>Struktur Organisasi</span>
-              </button>
+          {/* 2. Uraian Tugas Pegawai */}
+          <button
+            id="tab-uraian-view"
+            onClick={() => {
+              onSelectSheet('sheet-uraian-tugas');
+              onChangeTab('uraian_tugas');
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              activeSheetId === 'sheet-uraian-tugas' && (activeTab === 'uraian_tugas' || activeTab === 'sheet')
+                ? 'bg-emerald-700 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+            }`}
+            title="Buka Lembar Pengelolaan & Kartu Uraian Tugas 164 Pegawai"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Uraian Tugas (164)</span>
+          </button>
 
-              <button
-                id="tab-sheet-view"
-                onClick={() => onChangeTab('sheet')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                  activeTab === 'sheet'
-                    ? 'bg-emerald-700 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                }`}
-              >
-                <Table2 className="w-3.5 h-3.5" />
-                <span>Data Sheet (Tabel)</span>
-              </button>
-            </>
-          ) : (
-            /* JIKA LEMBAR MASTER SDMK PUSKESMAS AKTIF */
-            <>
-              <button
-                id="tab-sheet-view"
-                onClick={() => onChangeTab('sheet')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                  activeTab === 'sheet'
-                    ? 'bg-emerald-700 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                }`}
-              >
-                <Table2 className="w-3.5 h-3.5" />
-                <span>Data Sheet</span>
-              </button>
+          {/* 3. Struktur Organisasi */}
+          <button
+            id="tab-struktur-view"
+            onClick={() => {
+              onSelectSheet('sheet-uraian-tugas');
+              onChangeTab('struktur_organisasi');
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              activeTab === 'struktur_organisasi'
+                ? 'bg-emerald-700 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+            }`}
+            title="Bagan Struktur Organisasi Resmi (Pergub DKI No. 14/2023 & ILP Kemenkes)"
+          >
+            <GitBranch className="w-3.5 h-3.5" />
+            <span>Struktur Organisasi</span>
+          </button>
 
-              <button
-                id="tab-analytics-view"
-                onClick={() => onChangeTab('analytics')}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                  activeTab === 'analytics' || activeTab === 'pivot'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                }`}
-              >
-                <BarChart3 className="w-3.5 h-3.5" />
-                <span>Lembar Analitik & Grafik</span>
-              </button>
-            </>
-          )}
+          {/* 4. Analitik & Grafik */}
+          <button
+            id="tab-analytics-view"
+            onClick={() => {
+              onSelectSheet('sheet-master-puskesmas');
+              onChangeTab('analytics');
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              activeTab === 'analytics' || activeTab === 'pivot'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+            }`}
+            title="Dashboard Analitik SDMK, Grafik & Matriks Pivot"
+          >
+            <BarChart3 className="w-3.5 h-3.5" />
+            <span>Analitik & Pivot</span>
+          </button>
 
+          {/* 5. Wawasan AI */}
           <button
             id="tab-ai-view"
             onClick={() => onChangeTab('ai')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
               activeTab === 'ai'
                 ? 'bg-emerald-700 text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
             }`}
+            title="Analisis Cerdas & Rekomendasi Beban Kerja AI Gemini"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Wawasan AI (Gemini)</span>
+            <span>Wawasan AI</span>
           </button>
         </div>
       </div>
@@ -435,8 +436,8 @@ export const Header: React.FC<HeaderProps> = ({
                   <Server className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold">Solusi Deploy Hostinger (Bebas Layar Putih)</h3>
-                  <p className="text-[11px] text-emerald-100">Paket file siap saji khusus direktori public_html Hostinger</p>
+                  <h3 className="text-sm font-bold">Panduan Deploy Niagahoster / Hostinger</h3>
+                  <p className="text-[11px] text-emerald-100">analitikpegawai.puskesmasseribuselatan.com (Master SDMK & Uraian Tugas)</p>
                 </div>
               </div>
               <button 
@@ -449,24 +450,24 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Modal Body */}
             <div className="p-6 space-y-5 text-xs text-slate-700 max-h-[75vh] overflow-y-auto">
-              <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
-                <HelpCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                <div className="text-[11px] leading-relaxed text-amber-900">
-                  <strong>Penyebab Layar Putih Sebelumnya:</strong> Hostinger Git secara bawaan menarik source code mentah (<code className="bg-amber-100 px-1 py-0.5 rounded text-amber-800">src/main.tsx</code>) yang tidak bisa dijalankan oleh browser. Web butuh hasil kompilasi produksi (<code className="bg-amber-100 px-1 py-0.5 rounded text-amber-800">index.html</code> + <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-800">assets/</code>).
+              <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-3">
+                <Check className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
+                <div className="text-[11px] leading-relaxed text-emerald-950">
+                  <strong>Penyempurnaan Sinkronisasi Produksi:</strong> Seluruh dataset <strong>Master SDMK (158 Pegawai)</strong> dan <strong>Uraian Tugas (164 Pegawai)</strong> sudah tertanam mandiri (*pre-embedded*). Bundle produksi di folder <code className="bg-emerald-100 px-1 py-0.5 rounded text-emerald-800">assets/</code> dan skrip <code className="bg-emerald-100 px-1 py-0.5 rounded text-emerald-800">api-sync.php</code> telah diperbarui secara otomatis.
                 </div>
               </div>
 
-              {/* Step 1: Download */}
+              {/* Step 1: Download ZIP */}
               <div className="border border-slate-200 rounded-xl p-4 bg-slate-50">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-bold text-slate-900 flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px]">1</span>
-                    Unduh Paket Siap Deploy (.ZIP)
+                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px]">A</span>
+                    Metode 1: Upload Paket Siap Pakai (.ZIP) ke cPanel
                   </span>
-                  <span className="text-[10px] text-slate-500 font-mono">~275 KB</span>
+                  <span className="text-[10px] text-slate-500 font-mono">Direkomendasikan</span>
                 </div>
                 <p className="text-[11px] text-slate-600 mb-3">
-                  Paket ini sudah berisi <code className="text-slate-800 font-semibold">index.html</code>, folder <code className="text-slate-800 font-semibold">assets/</code>, dan konfigurasi <code className="text-slate-800 font-semibold">.htaccess</code> Hostinger.
+                  Unduh paket kompilasi terbaru berikut yang sudah berisi file <code className="text-slate-800 font-semibold">index.html</code>, folder <code className="text-slate-800 font-semibold">assets/</code>, skrip backend <code className="text-slate-800 font-semibold">api-sync.php</code>, dan konfigurasi <code className="text-slate-800 font-semibold">.htaccess</code>.
                 </p>
                 <a
                   href="./hostinger_public_html.zip"
@@ -474,34 +475,36 @@ export const Header: React.FC<HeaderProps> = ({
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-xs transition-colors"
                 >
                   <Package className="w-4 h-4" />
-                  <span>Klik Untuk Download: hostinger_public_html.zip</span>
+                  <span>Unduh: hostinger_public_html.zip (Versi Terbaru)</span>
                 </a>
-              </div>
-
-              {/* Step 2: Extract in Hostinger */}
-              <div className="border border-slate-200 rounded-xl p-4 space-y-2">
-                <span className="font-bold text-slate-900 flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px]">2</span>
-                  Upload & Ekstrak di File Manager Hostinger
-                </span>
-                <ol className="list-decimal list-inside space-y-1.5 text-[11px] text-slate-600 pl-1">
-                  <li>Buka <strong>hPanel Hostinger</strong> ➔ <strong>File Manager</strong>.</li>
-                  <li>Buka folder:
-                    <div className="my-1.5 p-2 bg-slate-100 rounded-lg font-mono text-[10px] text-slate-800 select-all border border-slate-200 break-all">
-                      /domains/analitikpegawaipkmkss.puskesmasseribuselatan.com/public_html
-                    </div>
-                  </li>
-                  <li>Hapus file lama yang ada di dalam <code className="font-semibold">public_html</code> (jika ada file mentah dari Git sebelumnya).</li>
-                  <li>Upload file <code className="font-semibold text-emerald-700">hostinger_public_html.zip</code> yang baru Anda download.</li>
-                  <li>Klik kanan file zip tersebut di Hostinger ➔ Pilih <strong>Extract</strong> (ekstrak di folder yang sama / titik <code className="bg-slate-200 px-1 rounded">.</code>).</li>
+                <ol className="list-decimal list-inside space-y-1 text-[11px] text-slate-600 mt-3 pl-1">
+                  <li>Buka <strong>File Manager</strong> di cPanel / hPanel Niagahoster.</li>
+                  <li>Buka folder root website: <code className="font-mono bg-slate-200/80 px-1.5 py-0.5 rounded text-slate-800">public_html</code> (atau subfolder domain <code className="font-mono text-emerald-800">analitikpegawai.puskesmasseribuselatan.com</code>).</li>
+                  <li>Upload file <code className="font-semibold text-emerald-700">hostinger_public_html.zip</code> dan klik <strong>Extract</strong> di dalam folder tersebut.</li>
                 </ol>
               </div>
 
-              {/* Step 3: Finished */}
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-2.5">
-                <Check className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                <div className="text-[11px] text-emerald-900 leading-relaxed">
-                  <strong>Selesai! Tidak Perlu Node.js Server:</strong> Seluruh 158 data master staf puskesmas sudah tertanam langsung (*pre-embedded*). Fitur sinkronisasi Google Sheets juga sudah dilengkapi modul *client-side*, sehingga web berjalan 100% cepat dan stabil di shared hosting biasa!
+              {/* Step 2: Git Sync */}
+              <div className="border border-slate-200 rounded-xl p-4 space-y-2 bg-slate-50/50">
+                <span className="font-bold text-slate-900 flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px]">B</span>
+                  Metode 2: Sinkronisasi via GitHub ke Niagahoster
+                </span>
+                <p className="text-[11px] text-slate-600">
+                  Jika menggunakan fitur <strong>Git Version Control</strong> di cPanel Niagahoster:
+                </p>
+                <ol className="list-decimal list-inside space-y-1.5 text-[11px] text-slate-600 pl-1">
+                  <li>Lakukan <strong>Push</strong> dari GitHub ke branch <code className="font-mono bg-slate-200 px-1 rounded">main</code> atau <code className="font-mono bg-slate-200 px-1 rounded">production</code>.</li>
+                  <li>Di cPanel Niagahoster ➔ <strong>Git Version Control</strong> ➔ Klik <strong>Update from Remote</strong> / <strong>Deploy HEAD Commit</strong>.</li>
+                  <li>Folder <code className="font-mono bg-slate-200 px-1 rounded">assets/bundle.js</code> yang baru akan langsung terpasang otomatis di hosting.</li>
+                </ol>
+              </div>
+
+              {/* Step 3: Cache Buster Info */}
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2.5">
+                <HelpCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <div className="text-[11px] text-amber-900 leading-relaxed">
+                  <strong>Tips Pembersihan Cache Browser:</strong> Jika Anda baru saja membuka web di hosting dan lembar belum berubah, lakukan <strong>Hard Refresh (Ctrl + F5 atau Cmd + Shift + R)</strong> atau klik tombol <strong>"Pulihkan Data"</strong> di pojok kanan atas aplikasi untuk memuat dataset 164 pegawai secara instan.
                 </div>
               </div>
             </div>

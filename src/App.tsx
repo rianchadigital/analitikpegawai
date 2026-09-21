@@ -20,7 +20,7 @@ import { ImportCsvModal } from './components/Modals/ImportCsvModal';
 import { FilterModal } from './components/Modals/FilterModal';
 import { fetchServerStaffPhotos } from './utils/googleDriveHelper';
 
-const STORAGE_KEY = 'sheet_analitik_sdmk_v6';
+const STORAGE_KEY = 'sheet_analitik_sdmk_v7';
 
 // Validasi apakah baris data tergeser / terkorupsi dari cache versi terdahulu
 export function isSheetDataCorrupted(sheet: Sheet): boolean {
@@ -55,8 +55,8 @@ export default function App() {
   // Initialize Sheets from LocalStorage with Auto-Healing or Default Templates
   const [sheets, setSheets] = useState<Sheet[]>(() => {
     try {
-      // Bersihkan key legacy yang berpotensi menyimpan cache baris tergeser
-      ['sheet_analitik_state_v1', 'sheet_analitik_state_v2', 'sheet_analitik_state_v3', 'sheet_analitik_sdmk_v4', 'sheet_analitik_sdmk_v5'].forEach(k => {
+      // Bersihkan key legacy yang berpotensi menyimpan cache baris tergeser atau sheet tidak lengkap
+      ['sheet_analitik_state_v1', 'sheet_analitik_state_v2', 'sheet_analitik_state_v3', 'sheet_analitik_sdmk_v4', 'sheet_analitik_sdmk_v5', 'sheet_analitik_sdmk_v6'].forEach(k => {
         try { localStorage.removeItem(k); } catch {}
       });
 
@@ -361,9 +361,9 @@ export default function App() {
     handleUpdateActiveSheet({ ...activeSheet, rows: updatedRows });
   }, [activeSheet, handleUpdateActiveSheet]);
 
-  // Reset / Pulihkan ke Data Bawaan Resmi Master SDMK
+  // Reset / Pulihkan ke Data Bawaan Resmi Master SDMK & Uraian Tugas
   const handleResetDefaults = () => {
-    ['sheet_analitik_state_v1', 'sheet_analitik_state_v2', 'sheet_analitik_state_v3', STORAGE_KEY].forEach(k => {
+    ['sheet_analitik_state_v1', 'sheet_analitik_state_v2', 'sheet_analitik_state_v3', 'sheet_analitik_sdmk_v4', 'sheet_analitik_sdmk_v5', 'sheet_analitik_sdmk_v6', STORAGE_KEY].forEach(k => {
       try { localStorage.removeItem(k); } catch {}
     });
     setSheets(DEFAULT_SHEETS);

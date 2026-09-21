@@ -15,6 +15,7 @@ export default defineConfig(() => {
     build: {
       rollupOptions: {
         output: {
+          inlineDynamicImports: true,
           entryFileNames: 'assets/bundle.js',
           assetFileNames: (assetInfo) => {
             if (assetInfo.names && assetInfo.names.some(n => n.endsWith('.css'))) {
@@ -22,7 +23,6 @@ export default defineConfig(() => {
             }
             return 'assets/[name][extname]';
           },
-          chunkFileNames: 'assets/[name].js',
         },
       },
     },
