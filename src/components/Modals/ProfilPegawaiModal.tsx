@@ -103,6 +103,8 @@ export const ProfilPegawaiModal: React.FC<ProfilPegawaiModalProps> = ({
   const nik = employee.nik || '-';
   const nrk = employee.nrk || '-';
   const statusPegawai = employee.status_kepegawaian || '-';
+  const isPnsOrCpns = employee.status_kepegawaian === 'PNS' || employee.status_kepegawaian === 'CPNS';
+  const statusTenaga = employee.status_tenaga || (isPnsOrCpns ? 'Tetap' : 'Kontrak');
   const golongan = employee.gol || '-';
   const jabatan = employee.jabatan || '-';
   const rumpunJabatan = employee.rumpun_jabatan || '-';
@@ -509,6 +511,19 @@ SIP: ${sipDisplay}`;
                       <td className="py-1.5 text-center">:</td>
                       <td className="py-1.5 font-bold text-slate-900">
                         {statusPegawai} {golongan !== '-' ? `(Gol. ${golongan})` : ''}
+                      </td>
+                    </tr>
+                    <tr className="border-b border-slate-300">
+                      <td className="py-1.5 font-semibold text-slate-900 whitespace-nowrap">Status Tenaga</td>
+                      <td className="py-1.5 text-center">:</td>
+                      <td className="py-1.5 font-bold text-slate-900">
+                        <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold border ${
+                          statusTenaga === 'Tetap'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                            : 'bg-amber-50 text-amber-800 border-amber-300'
+                        }`}>
+                          {statusTenaga} (Tenaga {statusTenaga})
+                        </span>
                       </td>
                     </tr>
                     <tr className="border-b border-slate-300">

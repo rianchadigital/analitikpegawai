@@ -71,6 +71,8 @@ export const DataSheet: React.FC<DataSheetProps> = ({
       if (quickTag !== 'ALL') {
         if (quickTag === 'NAKES' && row.jenis_tenaga !== 'Tenaga Kesehatan') return false;
         if (quickTag === 'NON_NAKES' && row.jenis_tenaga !== 'Tenaga Penunjang') return false;
+        if (quickTag === 'TETAP' && (row.status_tenaga !== 'Tetap' && row.status_kepegawaian !== 'PNS' && row.status_kepegawaian !== 'CPNS')) return false;
+        if (quickTag === 'KONTRAK' && (row.status_tenaga !== 'Kontrak' && (row.status_kepegawaian === 'PNS' || row.status_kepegawaian === 'CPNS'))) return false;
         if (quickTag === 'PNS' && row.status_kepegawaian !== 'PNS') return false;
         if (quickTag === 'PPPK' && !String(row.status_kepegawaian).includes('PPPK')) return false;
         if (quickTag === 'NON_PNS' && row.status_kepegawaian !== 'NON PNS') return false;
@@ -365,6 +367,12 @@ export const DataSheet: React.FC<DataSheetProps> = ({
   // Category Badge Colors
   const getBadgeStyle = (val: string) => {
     const lower = String(val).toLowerCase();
+    if (lower === 'tetap' || lower.includes('tenaga tetap')) {
+      return 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold';
+    }
+    if (lower === 'kontrak' || lower.includes('tenaga kontrak')) {
+      return 'bg-amber-50 text-amber-800 border-amber-300 font-bold';
+    }
     if (lower.includes('kesehatan') || lower.includes('nakes') || lower.includes('selesai') || lower.includes('efektif') || lower.includes('hemat') || lower.includes('sesuai') || lower.includes('aktif')) {
       return 'bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold';
     }
@@ -520,6 +528,8 @@ export const DataSheet: React.FC<DataSheetProps> = ({
           <span className="text-slate-500 font-bold shrink-0 mr-1">Filter Cepat SDMK:</span>
           {[
             { id: 'ALL', label: `Semua (${sheet.rows.length})` },
+            { id: 'TETAP', label: 'Tenaga Tetap' },
+            { id: 'KONTRAK', label: 'Tenaga Kontrak' },
             { id: 'NAKES', label: 'Tenaga Kesehatan' },
             { id: 'NON_NAKES', label: 'Tenaga Penunjang' },
             { id: 'PNS', label: 'PNS' },

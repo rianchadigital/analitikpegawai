@@ -36,6 +36,7 @@ export const DataPegawaiRingkas: React.FC<DataPegawaiRingkasProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUnit, setSelectedUnit] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
+  const [selectedStatusTenaga, setSelectedStatusTenaga] = useState('ALL');
   const [selectedJenisTenaga, setSelectedJenisTenaga] = useState('ALL');
   const [selectedGender, setSelectedGender] = useState('ALL');
 
@@ -95,6 +96,13 @@ export const DataPegawaiRingkas: React.FC<DataPegawaiRingkasProps> = ({
         return false;
       }
 
+      // Status tenaga filter (Tetap vs Kontrak)
+      if (selectedStatusTenaga !== 'ALL') {
+        const isTetap = row.status_tenaga === 'Tetap' || row.status_kepegawaian === 'PNS' || row.status_kepegawaian === 'CPNS';
+        if (selectedStatusTenaga === 'Tetap' && !isTetap) return false;
+        if (selectedStatusTenaga === 'Kontrak' && isTetap) return false;
+      }
+
       // Jenis tenaga filter
       if (selectedJenisTenaga !== 'ALL' && row.jenis_tenaga !== selectedJenisTenaga) {
         return false;
@@ -109,10 +117,12 @@ export const DataPegawaiRingkas: React.FC<DataPegawaiRingkasProps> = ({
 
       return true;
     });
-  }, [sheet.rows, searchQuery, selectedUnit, selectedStatus, selectedJenisTenaga, selectedGender]);
+  }, [sheet.rows, searchQuery, selectedUnit, selectedStatus, selectedStatusTenaga, selectedJenisTenaga, selectedGender]);
 
   // Statistics
   const totalCount = sheet.rows.length;
+  const tetapCount = useMemo(() => sheet.rows.filter(r => r.status_tenaga === 'Tetap' || r.status_kepegawaian === 'PNS' || r.status_kepegawaian === 'CPNS').length, [sheet.rows]);
+  const kontrakCount = useMemo(() => sheet.rows.length - tetapCount, [sheet.rows, tetapCount]);
   const nakesCount = useMemo(() => sheet.rows.filter(r => r.jenis_tenaga === 'Tenaga Kesehatan').length, [sheet.rows]);
   const penunjangCount = useMemo(() => sheet.rows.filter(r => r.jenis_tenaga === 'Tenaga Penunjang').length, [sheet.rows]);
   const pnsCount = useMemo(() => sheet.rows.filter(r => r.status_kepegawaian === 'PNS').length, [sheet.rows]);
@@ -132,6 +142,7 @@ export const DataPegawaiRingkas: React.FC<DataPegawaiRingkasProps> = ({
     setSearchQuery('');
     setSelectedUnit('ALL');
     setSelectedStatus('ALL');
+    setSelectedStatusTenaga('ALL');
     setSelectedJenisTenaga('ALL');
     setSelectedGender('ALL');
     setCurrentPage(1);
@@ -336,6 +347,22 @@ export const DataPegawaiRingkas: React.FC<DataPegawaiRingkasProps> = ({
             </select>
           </div>
 
+          {/* Status Tenaga Filter (Tetap / Kontrak) */}
+          <div className="w-full md:w-40 shrink-0">
+            <select
+              value={selectedStatusTenaga}
+              onChange={(e) => {
+                setSelectedStatusTenaga(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold"
+            >
+              <option value="ALL">Semua Tenaga</option>
+              <option value="Tetap">Tenaga Tetap ({tetapCount})</option>
+              <option value="Kontrak">Tenaga Kontrak ({kontrakCount})</option>
+            </select>
+          </div>
+
           {/* Jenis Tenaga Filter */}
           <div className="w-full md:w-44 shrink-0">
             <select
@@ -353,7 +380,7 @@ export const DataPegawaiRingkas: React.FC<DataPegawaiRingkasProps> = ({
           </div>
 
           {/* Reset Filters */}
-          {(searchQuery || selectedUnit !== 'ALL' || selectedStatus !== 'ALL' || selectedJenisTenaga !== 'ALL' || selectedGender !== 'ALL') && (
+          {(searchQuery || selectedUnit !== 'ALL' || selectedStatus !== 'ALL' || selectedStatusTenaga !== 'ALL' || selectedJenisTenaga !== 'ALL' || selectedGender !== 'ALL') && (
             <button
               onClick={handleResetFilters}
               className="px-3 py-2 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl border border-rose-200 flex items-center gap-1 shrink-0 transition-colors"
@@ -456,11 +483,20 @@ export const DataPegawaiRingkas: React.FC<DataPegawaiRingkasProps> = ({
                         {jabatan}
                       </td>
 
-                      {/* 5. Status Kepegawaian */}
+                      {/* 5. Status Kepegawaian & Status Tenaga */}
                       <td className="py-3 px-3.5 text-center">
-                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getStatusBadgeClass(status)}`}>
-                          {status}
-                        </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getStatusBadgeClass(status)}`}>
+                            {status}
+                          </span>
+                          <span className={`inline-block px-2 py-0.2 rounded-full text-[9px] font-bold border ${
+                            (row.status_tenaga === 'Tetap' || status === 'PNS' || status === 'CPNS')
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                              : 'bg-amber-50 text-amber-800 border-amber-300'
+                          }`}>
+                            Tenaga {row.status_tenaga || ((status === 'PNS' || status === 'CPNS') ? 'Tetap' : 'Kontrak')}
+                          </span>
+                        </div>
                       </td>
 
                       {/* 6. Tempat / Unit Tugas */}

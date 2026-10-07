@@ -96,7 +96,8 @@ export function transformCSVToSheet(csvText: string): Sheet {
     no_str: colIdx('NOMOR STR', 47),
     no_sip: colIdx('SIP', 48),
     tgl_terbit_sip: colIdx('TANGGAL TERBIT SIP', 49),
-    tgl_berakhir_sip: colIdx('TANGGAL BERAKHIR SIP', 50)
+    tgl_berakhir_sip: colIdx('TANGGAL BERAKHIR SIP', 50),
+    status_tenaga: colIdx('STATUS TENAGA', -1)
   };
 
   const dataRows = arr.slice(1).filter(r => {
@@ -113,6 +114,8 @@ export function transformCSVToSheet(csvText: string): Sheet {
     { id: 'jabatan', name: 'Jabatan', type: 'text', width: 200, visible: true, aggregation: 'none' },
     { id: 'status_kepegawaian', name: 'Status Pegawai', type: 'badge', width: 140, visible: true, aggregation: 'none',
       options: ['PNS', 'PPPK', 'PPPK PW', 'NON PNS', 'PJLP', 'CPNS'] },
+    { id: 'status_tenaga', name: 'Status Tenaga', type: 'badge', width: 130, visible: true, aggregation: 'none',
+      options: ['Tetap', 'Kontrak'] },
     { id: 'jenis_tenaga', name: 'Jenis Tenaga', type: 'badge', width: 150, visible: true, aggregation: 'none',
       options: ['Tenaga Kesehatan', 'Tenaga Penunjang'] },
     { id: 'gol', name: 'Golongan', type: 'text', width: 130, visible: true, aggregation: 'none' },
@@ -150,6 +153,11 @@ export function transformCSVToSheet(csvText: string): Sheet {
     const unit = cols[colMap.tempat_tugas]?.trim() || 'Puskesmas Kepulauan Seribu Selatan';
     const jabatan = cols[colMap.jabatan]?.trim() || cols[colMap.jabatan_alt]?.trim() || '-';
     const statusPeg = cols[colMap.status_kepegawaian]?.trim() || 'NON PNS';
+    const statusPegUpper = statusPeg.toUpperCase();
+    const rawStatusTenaga = (colMap.status_tenaga !== -1 ? cols[colMap.status_tenaga]?.trim() : '') || '';
+    const statusTenaga = rawStatusTenaga 
+      ? (rawStatusTenaga.toLowerCase().includes('tetap') ? 'Tetap' : rawStatusTenaga.toLowerCase().includes('kontrak') ? 'Kontrak' : rawStatusTenaga)
+      : (statusPegUpper === 'PNS' || statusPegUpper === 'CPNS' ? 'Tetap' : 'Kontrak');
     const jenisTenaga = cols[colMap.jenis_tenaga]?.trim() || 'Tenaga Penunjang';
     const nip = cols[colMap.nip]?.trim() || '-';
     const nrk = cols[colMap.nrk]?.trim() || '';
@@ -186,6 +194,7 @@ export function transformCSVToSheet(csvText: string): Sheet {
       jabatan,
       rumpun_jabatan: cols[colMap.rumpun_jabatan]?.trim() || '',
       status_kepegawaian: statusPeg,
+      status_tenaga: statusTenaga,
       jenis_tenaga: jenisTenaga,
       gol,
       jenis_kelamin: cols[colMap.gender]?.trim() || 'Perempuan',

@@ -75,6 +75,25 @@ export const MatrixPivot: React.FC<MatrixPivotProps> = ({ sheet }) => {
 
     // 2. Status & Kepegawaian
     { 
+      id: 'status_tenaga', 
+      label: 'STATUS TENAGA (TETAP / KONTRAK)', 
+      group: 'Status & Kepegawaian',
+      aliases: ['STATUS TENAGA', 'status_tenaga', 'Status Tenaga', 'status_tenaga_kerja', 'tenaga_kontrak_tetap', 'KONTRAK / TETAP'],
+      getValue: (r) => {
+        const val = r.status_tenaga || r['STATUS TENAGA'] || r['Status Tenaga'];
+        if (val && String(val).trim() !== '') {
+          const s = String(val).trim();
+          if (/tetap/i.test(s)) return 'Tetap';
+          if (/kontrak/i.test(s)) return 'Kontrak';
+          return s;
+        }
+        const sk = String(r.status_kepegawaian || r['STATUS KEPEGAWAIAN'] || '').toUpperCase().trim();
+        if (sk === 'PNS' || sk === 'CPNS') return 'Tetap';
+        if (sk === 'NON PNS' || sk === 'PJLP' || sk.includes('PPPK') || sk.includes('KONTRAK') || sk.includes('HONOR')) return 'Kontrak';
+        return '(Belum Diatur)';
+      }
+    },
+    { 
       id: 'status_kepegawaian', 
       label: 'STATUS KEPEGAWAIAN', 
       group: 'Status & Kepegawaian',
@@ -905,6 +924,46 @@ export const MatrixPivot: React.FC<MatrixPivotProps> = ({ sheet }) => {
               <span>Reset</span>
             </button>
           </div>
+        </div>
+
+        {/* Preset Cepat Dimensi (Termasuk Matriks Status Tenaga Tetap vs Kontrak) */}
+        <div className="mb-4 pb-3 border-b border-slate-100 flex flex-wrap items-center gap-1.5 text-xs">
+          <span className="text-[11px] font-bold text-slate-500 mr-1 flex items-center gap-1">
+            <Layers className="w-3.5 h-3.5 text-blue-600" />
+            Preset Analisis Cepat:
+          </span>
+          {[
+            { label: 'Tempat Tugas × Status Tenaga', row: 'tempat_tugas', col: 'status_tenaga', badge: 'Populer' },
+            { label: 'Jabatan × Status Tenaga', row: 'jabatan_pergub', col: 'status_tenaga' },
+            { label: 'Jenis Tenaga × Status Tenaga', row: 'jenis_tenaga', col: 'status_tenaga' },
+            { label: 'Status Kepegawaian × Status Tenaga', row: 'status_kepegawaian', col: 'status_tenaga' },
+            { label: 'Tempat Tugas × Status Pegawai', row: 'tempat_tugas', col: 'status_kepegawaian' },
+          ].map((preset, idx) => {
+            const isActive = rowDimension === preset.row && colDimension === preset.col;
+            return (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => {
+                  setRowDimension(preset.row);
+                  setColDimension(preset.col);
+                  setCurrentPage(1);
+                }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  isActive
+                    ? 'bg-blue-600 text-white shadow-2xs'
+                    : 'bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-700 border border-slate-200'
+                }`}
+              >
+                <span>{preset.label}</span>
+                {preset.badge && !isActive && (
+                  <span className="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.2 rounded font-bold">
+                    {preset.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* Pivot Dimension Pickers */}

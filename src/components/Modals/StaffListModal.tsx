@@ -63,6 +63,7 @@ export const StaffListModal: React.FC<StaffListModalProps> = ({
       'NRK',
       'Jabatan',
       'Status Kepegawaian',
+      'Status Tenaga',
       'Jenis Tenaga',
       'Tempat Tugas',
       'Pendidikan',
@@ -76,6 +77,7 @@ export const StaffListModal: React.FC<StaffListModalProps> = ({
       `"${(s.nrk || '').replace(/"/g, '""')}"`,
       `"${(s.jabatan || '').replace(/"/g, '""')}"`,
       `"${(s.status_kepegawaian || '').replace(/"/g, '""')}"`,
+      `"${(s.status_tenaga || ((s.status_kepegawaian === 'PNS' || s.status_kepegawaian === 'CPNS') ? 'Tetap' : 'Kontrak')).replace(/"/g, '""')}"`,
       `"${(s.jenis_tenaga || '').replace(/"/g, '""')}"`,
       `"${(s.tempat_tugas || '').replace(/"/g, '""')}"`,
       `"${(s.pendidikan || '').replace(/"/g, '""')}"`,
@@ -189,6 +191,8 @@ export const StaffListModal: React.FC<StaffListModalProps> = ({
                     {filteredStaff.map((staff, idx) => {
                       const isPns = staff.status_kepegawaian?.toUpperCase() === 'PNS';
                       const isPppk = staff.status_kepegawaian?.toUpperCase() === 'PPPK';
+                      const isTetap = staff.status_tenaga === 'Tetap' || isPns || staff.status_kepegawaian?.toUpperCase() === 'CPNS';
+                      const statusTenagaLabel = staff.status_tenaga || (isTetap ? 'Tetap' : 'Kontrak');
 
                       return (
                         <tr 
@@ -226,15 +230,24 @@ export const StaffListModal: React.FC<StaffListModalProps> = ({
                             {staff.jabatan || '-'}
                           </td>
                           <td className="py-2.5 px-3">
-                            <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold ${
-                              isPns 
-                                ? 'bg-emerald-100 text-emerald-800' 
-                                : isPppk 
-                                ? 'bg-sky-100 text-sky-800' 
-                                : 'bg-amber-100 text-amber-800'
-                            }`}>
-                              {staff.status_kepegawaian || 'Aktif'}
-                            </span>
+                            <div className="flex flex-col gap-1 items-start">
+                              <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold ${
+                                isPns 
+                                  ? 'bg-emerald-100 text-emerald-800' 
+                                  : isPppk 
+                                  ? 'bg-sky-100 text-sky-800' 
+                                  : 'bg-amber-100 text-amber-800'
+                              }`}>
+                                {staff.status_kepegawaian || 'Aktif'}
+                              </span>
+                              <span className={`inline-block px-1.5 py-0.2 rounded text-[10px] font-bold border ${
+                                isTetap 
+                                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300' 
+                                  : 'bg-amber-50 text-amber-800 border-amber-300'
+                              }`}>
+                                {statusTenagaLabel}
+                              </span>
+                            </div>
                           </td>
                           <td className="py-2.5 px-3 text-slate-600">
                             <div className="flex items-center gap-1">

@@ -20,7 +20,7 @@ import { ImportCsvModal } from './components/Modals/ImportCsvModal';
 import { FilterModal } from './components/Modals/FilterModal';
 import { fetchServerStaffPhotos } from './utils/googleDriveHelper';
 
-const STORAGE_KEY = 'sheet_analitik_sdmk_v7';
+const STORAGE_KEY = 'sheet_analitik_sdmk_v8';
 
 // Validasi apakah baris data tergeser / terkorupsi dari cache versi terdahulu
 export function isSheetDataCorrupted(sheet: Sheet): boolean {
@@ -56,7 +56,7 @@ export default function App() {
   const [sheets, setSheets] = useState<Sheet[]>(() => {
     try {
       // Bersihkan key legacy yang berpotensi menyimpan cache baris tergeser atau sheet tidak lengkap
-      ['sheet_analitik_state_v1', 'sheet_analitik_state_v2', 'sheet_analitik_state_v3', 'sheet_analitik_sdmk_v4', 'sheet_analitik_sdmk_v5', 'sheet_analitik_sdmk_v6'].forEach(k => {
+      ['sheet_analitik_state_v1', 'sheet_analitik_state_v2', 'sheet_analitik_state_v3', 'sheet_analitik_sdmk_v4', 'sheet_analitik_sdmk_v5', 'sheet_analitik_sdmk_v6', 'sheet_analitik_sdmk_v7'].forEach(k => {
         try { localStorage.removeItem(k); } catch {}
       });
 
@@ -81,6 +81,31 @@ export default function App() {
           if (masterSheet && isSheetDataCorrupted(masterSheet)) {
             console.warn("Mendeteksi data master SDMK terkorupsi di cache browser. Memulihkan dengan master data resmi...");
             currentSheets = currentSheets.map((s: Sheet) => s.id === 'sheet-master-puskesmas' ? DEFAULT_SHEETS[0] : s);
+          } else if (masterSheet) {
+            // Pastikan kolom dan baris memiliki field status_tenaga
+            if (!masterSheet.columns.some((c: ColumnDef) => c.id === 'status_tenaga')) {
+              const idx = masterSheet.columns.findIndex((c: ColumnDef) => c.id === 'status_kepegawaian');
+              const newCol: ColumnDef = {
+                id: 'status_tenaga',
+                name: 'Status Tenaga',
+                type: 'badge',
+                width: 130,
+                visible: true,
+                aggregation: 'none',
+                options: ['Tetap', 'Kontrak']
+              };
+              if (idx !== -1) {
+                masterSheet.columns.splice(idx + 1, 0, newCol);
+              } else {
+                masterSheet.columns.push(newCol);
+              }
+            }
+            masterSheet.rows.forEach((r: RowData) => {
+              if (!r.status_tenaga) {
+                const sk = String(r.status_kepegawaian || '').toUpperCase().trim();
+                r.status_tenaga = (sk === 'PNS' || sk === 'CPNS') ? 'Tetap' : 'Kontrak';
+              }
+            });
           }
 
           localStorage.setItem(STORAGE_KEY, JSON.stringify(currentSheets));

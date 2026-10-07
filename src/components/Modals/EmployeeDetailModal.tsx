@@ -59,6 +59,13 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
                 <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-white/20 text-white">
                   {employee.status_kepegawaian || 'Aktif'}
                 </span>
+                <span className={`px-2 py-0.5 rounded-md text-[11px] font-bold ${
+                  (employee.status_tenaga === 'Tetap' || employee.status_kepegawaian === 'PNS' || employee.status_kepegawaian === 'CPNS')
+                    ? 'bg-emerald-300 text-emerald-950'
+                    : 'bg-amber-300 text-amber-950'
+                }`}>
+                  Tenaga {employee.status_tenaga || ((employee.status_kepegawaian === 'PNS' || employee.status_kepegawaian === 'CPNS') ? 'Tetap' : 'Kontrak')}
+                </span>
               </div>
               <h2 className="text-lg font-bold mt-1 text-white tracking-tight">
                 {employee.nama_gelar || employee.nama || 'Data Pegawai'}
